@@ -1,0 +1,43 @@
+<div class="movieCard">
+        <a [routerLink]="['/', movie.id]" class="movieDetailsLink">
+        <div class="posterWrapper">
+          @if (movie.posterUrl) {
+            <img [src]="movie.posterUrl" [alt]="movie.title" class="moviePoster" />
+          } @else {
+            <div class="posterPlaceholder">
+              <span>🎬</span>
+            </div>
+          }
+          <div class="ratingBadge">{{ movie.rating }}</div>
+        </div>
+        </a>
+
+        <div class="movieBody">
+          <div class="movieMeta">
+            <span class="genreTag">{{ movie.genre }}</span>
+            <span class="yearTag">{{ movie.releaseYear }}</span>
+          </div>
+
+          <h3 class="movieTitle">
+            <a [routerLink]="['/', movie.id]">{{ movie.title }}</a>
+          </h3>
+          <p class="movieDescription">{{ movie.description }}</p>
+
+          <div class="movieActions">
+            @if (movie.movieUrl) {
+              <a [href]="movie.movieUrl" target="_blank" class="watchBtn">
+                Watch Movie
+              </a>
+            }
+          </div>
+
+          <div class="commentsSection">
+            <div class="commentsHeader">
+              <span>Comments</span>
+              <span class="commentsCount">{{ movie.movieComments?.length || 0 }}</span>
+            </div>
+
+            
+          </div>
+      </div>
+</div>

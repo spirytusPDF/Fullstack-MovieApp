@@ -1,0 +1,26 @@
+<div class="moviesContainer">
+  <div class="moviesHeader">
+    <h2 class="moviesTitle">Movie Catalog</h2>
+    <p class="moviesSubtitle">Explore and find your next movie!</p>
+  </div>
+    @if (isLoading()) {
+    <div class="statusCard">
+      <div class="loader"></div>
+      <p>Loading movies...</p>
+    </div>
+      } @else if (errorMessage) {
+    <div class="statusCard errorCard">
+      <p class="errorMessage">{{ errorMessage }}</p>
+      <button class="btn btnSecondary" (click)="loadMovies()">Try again</button>
+    </div>
+      }
+  @if (!isLoading() && !errorMessage && movies().length === 0) {
+    <p class="emptyState">No movies found.</p>
+  }
+  <div class="moviesGrid">
+    @for (movie of movies(); track movie.title){
+        <app-movie-card [movie]="movie"></app-movie-card>
+    }
+      
+  </div>
+</div>

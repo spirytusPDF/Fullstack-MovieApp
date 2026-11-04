@@ -1,0 +1,32 @@
+<header>
+    <div>
+        @if(user()){
+            <a [ngStyle]="{'text-decoration': 'none'}" routerLink="/all"><h2>Movies🍿</h2></a>
+        }
+        @else {<h2>Movies🍿</h2>}
+    </div>
+
+    <div>
+        @if(user()){
+            <form>
+            <input type="text"
+            [(ngModel)]="searchQuery"
+            name="searchQuery"
+            (input)="onSearch()"
+            placeholder="Search movies...">
+            </form>
+        }
+        @else {<p>Let's sign in first!</p>}
+        
+    </div>
+
+    <nav class="user-nav">
+        @if (user()) {
+          <button (click)="openAddMovieModal()">Add a movie</button>
+          <span class="user-name">👤 {{ user()?.username }}</span>
+          <button (click)="onLogout()">Logout</button>
+        } @else {
+          <a class="header-button" routerLink="/register">Register</a>
+        }
+      </nav>
+</header>

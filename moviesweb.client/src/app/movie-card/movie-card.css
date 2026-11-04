@@ -1,0 +1,192 @@
+.movieCard {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 2px solid #ffd6e5;
+  box-shadow: 0 8px 25px rgba(255, 182, 193, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.movieDetailsLink,
+.movieTitle a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.movieDetailsLink {
+  display: block;
+}
+
+.movieCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(255, 182, 193, 0.35);
+}
+
+.posterWrapper {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background-color: #ffeef4;
+}
+
+.moviePoster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.posterPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  background: linear-gradient(135deg, #ffeef4 0%, #ffd6e5 100%);
+}
+
+.ratingBadge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: #ffffff;
+  color: #d85a8a;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #ffccd5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.movieBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.movieMeta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.genreTag {
+  background-color: #ffe3ec;
+  color: #7a4a58;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #ffc2d4;
+}
+
+.yearTag {
+  background-color: #fff0f5;
+  color: #b86b85;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.movieTitle {
+  margin: 0 0 8px 0;
+  color: #5a4b51;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.movieDescription {
+  margin: 0 0 16px 0;
+  color: #8c6b75;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  flex-grow: 1;
+  height: 100px;
+  overflow: hidden;
+}
+
+.movieActions {
+  margin-bottom: 16px;
+}
+
+.watchBtn {
+  display: block;
+  text-align: center;
+  background-color: #ff85a2;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(255, 133, 162, 0.3);
+  transition: all 0.2s ease;
+}
+
+.watchBtn:hover {
+  background-color: #f76c8e;
+  box-shadow: 0 5px 14px rgba(255, 133, 162, 0.45);
+}
+
+.commentsSection {
+  border-top: 2px dashed #ffd6e5;
+  padding-top: 14px;
+}
+
+.commentsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #7a4a58;
+  margin-bottom: 10px;
+}
+
+.commentsCount {
+  background-color: #ffd6e5;
+  color: #d85a8a;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.commentItem {
+  background-color: #fffafc;
+  border: 1px solid #ffccd5;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.commentUser {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #d85a8a;
+  margin-bottom: 2px;
+}
+
+.commentText {
+  font-size: 0.82rem;
+  color: #5a4b51;
+}
+
+.noComments {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #c49ba7;
+  font-style: italic;
+  text-align: center;
+}

@@ -1,0 +1,61 @@
+<div class="authContainer">
+  <div class="authCard">
+    <h2 class="authTitle">Welcome Back!</h2>
+    <p class="authSubtitle">Enter your details to sign in</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="loginForm">
+      
+      <div class="formGroup">
+        <label for="login">Login</label>
+        <input 
+          id="login" 
+          type="text" 
+          formControlName="login" 
+          placeholder="Enter your login ..." 
+        />
+        @if (loginForm.get('login')?.touched && loginForm.get('login')?.hasError('required')) {
+          <small class="errorText">Login is required</small>
+        }
+      </div>
+<div class="formGroup">
+        <label for="login">Email</label>
+        <input 
+          id="email" 
+          type="text" 
+          formControlName="email" 
+          placeholder="Enter your  email..." 
+        />
+        @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+          <small class="errorText">Email is required</small>
+        }
+      </div>
+      
+      <div class="formGroup">
+        <label for="password">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          formControlName="password" 
+          placeholder="••••••••" 
+        />
+        @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+          <small class="errorText">Password is required</small>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="serverErrorAlert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" class="submitBtn" [disabled]="loginForm.invalid">
+        Sign In
+      </button>
+
+      <p class="switchAuth">
+        Don't have an account yet? <a routerLink="/register">Create one here</a>
+      </p>
+    </form>
+  </div>
+</div>

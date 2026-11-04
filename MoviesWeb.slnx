@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="moviesweb.client/moviesweb.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="MoviesWeb.Server/MoviesWeb.Server.csproj" />
+  <Project Path="Repositories/Repositories.csproj" />
+  <Project Path="Services/Services.csproj" />
+</Solution>

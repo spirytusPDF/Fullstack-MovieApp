@@ -1,0 +1,139 @@
+
+.authContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: 30px 20px;
+  background: radial-gradient(circle at top left, #fff5f8, #ffeaf1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.authCard {
+  background: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 35px 40px;
+  border-radius: 24px;
+  border: 2px solid #ffd6e5;
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.25);
+}
+
+.authTitle {
+  margin: 0 0 6px 0;
+  color: #d85a8a;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.authSubtitle {
+  margin: 0 0 25px 0;
+  color: #a87385;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.formGroup label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #7a4a58;
+  margin-left: 4px;
+}
+
+.formGroup input {
+  padding: 11px 16px;
+  border: 2px solid #ffccd5;
+  border-radius: 16px;
+  outline: none;
+  font-size: 0.95rem;
+  color: #5a4b51;
+  background-color: #fffafc;
+  transition: all 0.25s ease;
+}
+
+.formGroup input::placeholder {
+  color: #e2a8b9;
+}
+
+.formGroup input:focus {
+  border-color: #ff85a2;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 133, 162, 0.25);
+}
+
+.errorText {
+  color: #e63946;
+  font-size: 0.78rem;
+  margin-left: 4px;
+  font-weight: 500;
+}
+
+.serverErrorAlert {
+  background-color: #ffe5e8;
+  color: #d63384;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  text-align: center;
+  border: 1px solid #ffc2d4;
+}
+
+.submitBtn {
+  margin-top: 8px;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background-color: #ff85a2;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 133, 162, 0.35);
+  transition: all 0.2s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: #f76c8e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(255, 133, 162, 0.45);
+}
+
+.submitBtn:disabled {
+  background-color: #ffd1dc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Переключение на регистрацию */
+.switchAuth {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #8c6b75;
+}
+
+.switchAuth a {
+  color: #d85a8a;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.switchAuth a:hover {
+  color: #f76c8e;
+  text-decoration: underline;
+}

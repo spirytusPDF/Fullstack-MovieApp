@@ -1,0 +1,129 @@
+<div class="formContainer">
+  <div class="formCard">
+    <div class="formHeader">
+      <h1 class="formTitle">Add new Movie</h1>
+      <p class="formSubtitle">Enter information</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="errorBanner">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form [formGroup]="movieForm" (ngSubmit)="onSubmit()" class="movieForm">
+      
+      <div class="formGroup">
+        <label for="title" class="formLabel">Title *</label>
+        <input 
+          id="title" 
+          type="text" 
+          formControlName="title" 
+          class="formInput" 
+          [class.inputError]="movieForm.get('title')?.touched && movieForm.get('title')?.invalid"
+          placeholder="Ex: Titanic" />
+        @if (movieForm.get('title')?.touched && movieForm.get('title')?.errors?.['required']) {
+          <span class="fieldError">Enter movie title</span>
+        }
+      </div>
+
+      <div class="formGroup">
+        <label for="description" class="formLabel">Description *</label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          maxlength="400"
+          rows="4" 
+          class="formInput textareaInput" 
+          [class.inputError]="movieForm.get('description')?.touched && movieForm.get('description')?.invalid"
+          placeholder="Short movie plot..."></textarea>
+        @if (movieForm.get('description')?.touched && movieForm.get('description')?.errors?.['required']) {
+          <span class="fieldError">Add movie description</span>
+        }
+        @if (movieForm.get('description')?.touched && movieForm.get('description')?.errors?.['maxlength']) {
+          <span class="fieldError">Description cannot exceed 400 characters</span>
+        }
+      </div>
+
+      <div class="formRow">
+        <div class="formGroup">
+          <label for="genre" class="formLabel">Genre *</label>
+          <input 
+            id="genre" 
+            type="text" 
+            formControlName="genre" 
+            class="formInput" 
+            [class.inputError]="movieForm.get('genre')?.touched && movieForm.get('genre')?.invalid"
+            placeholder="Drama, comedy..." />
+          @if (movieForm.get('genre')?.touched && movieForm.get('genre')?.errors?.['required']) {
+            <span class="fieldError">Enter genre</span>
+          }
+        </div>
+
+        <div class="formGroup">
+          <label for="releaseYear" class="formLabel">Release year *</label>
+          <input 
+            id="releaseYear" 
+            type="number" 
+            formControlName="releaseYear" 
+            class="formInput" 
+            [class.inputError]="movieForm.get('releaseYear')?.touched && movieForm.get('releaseYear')?.invalid"
+            placeholder="2024" />
+          @if (movieForm.get('releaseYear')?.touched && movieForm.get('releaseYear')?.errors?.['required']) {
+            <span class="fieldError">Enter year</span>
+          }
+        </div>
+      </div>
+
+      <div class="formGroup">
+        <label for="rating" class="formLabel">Rating (0 - 10) *</label>
+        <input 
+          id="rating" 
+          type="number" 
+          step="0.1" 
+          formControlName="rating" 
+          class="formInput" 
+          [class.inputError]="movieForm.get('rating')?.touched && movieForm.get('rating')?.invalid"
+          placeholder="8.5" />
+        @if (movieForm.get('rating')?.touched && movieForm.get('rating')?.errors?.['required']) {
+          <span class="fieldError">Enter rating</span>
+        }
+      </div>
+
+      <div class="formGroup">
+        <label for="posterUrl" class="formLabel">Poster (URL)</label>
+        <input 
+          id="posterUrl" 
+          type="url" 
+          formControlName="posterUrl" 
+          class="formInput" 
+          placeholder="https://example.com/poster.jpg" />
+      </div>
+
+      <!-- Movie URL -->
+      <div class="formGroup">
+        <label for="movieUrl" class="formLabel">Movie link (URL)</label>
+        <input 
+          id="movieUrl" 
+          type="url" 
+          formControlName="movieUrl" 
+          class="formInput" 
+          placeholder="https://example.com/watch" />
+      </div>
+
+      <div class="formActions">
+        <button type="button" class="btn btnSecondary" (click)="onCancel()" [disabled]="isSubmitting">
+          Cancel
+        </button>
+        <button type="submit" class="btn btnPrimary" [disabled]="isSubmitting">
+          @if (isSubmitting) {
+            Saving...
+          } @else {
+            Save
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

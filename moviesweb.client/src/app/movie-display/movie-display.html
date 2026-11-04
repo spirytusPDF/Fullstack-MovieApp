@@ -1,0 +1,151 @@
+<div class="movieContainer">
+  @if (isLoading()) {
+    <div class="statusCard">
+      <div class="loader"></div>
+      <p>Loading movie info...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="statusCard errorCard">
+      <p class="errorMessage">{{ errorMessage }}</p>
+      <button class="btn btnSecondary" (click)="loadMovie()">Try again</button>
+    </div>
+  } @else if (movie(); as currentMovie) {
+    <div class="movieCard">
+      <div class="movieHeader">
+        <div class="posterWrapper">
+          @if (currentMovie.posterUrl) {
+            <img [src]="currentMovie.posterUrl" [alt]="currentMovie.title" class="posterImage" />
+          } @else {
+            <div class="posterPlaceholder">
+              <span>🎬</span>
+            </div>
+          }
+          <div class="ratingBadge">★ {{ currentMovie.rating }}</div>
+        </div>
+
+        <div class="movieInfo">
+          @if (isEditing()) {
+            <h1 class="movieTitle">{{ currentMovie.title }}</h1>
+            <form [formGroup]="editForm" (ngSubmit)="saveMovie()" class="editForm commentForm">
+              <label>
+                Description
+                <textarea class="commentInput" rows="5" maxlength="400" formControlName="description"></textarea>
+              </label>
+              <label>
+                Genre
+                <input class="commentInput" formControlName="genre" maxlength="30" />
+              </label>
+              <div class="editRow">
+                <label>
+                  Release year
+                  <input class="commentInput" type="number" formControlName="releaseYear" />
+                </label>
+                <label>
+                  Rating
+                  <input class="commentInput" type="number" step="0.1" formControlName="rating" />
+                </label>
+              </div>
+              <label>
+                Poster URL
+                <input class="commentInput" type="url" formControlName="posterUrl" />
+              </label>
+              <label>
+                Movie URL
+                <input class="commentInput" type="url" formControlName="movieUrl" />
+              </label>
+              @if (editError()) {
+                <p class="errorMessage">{{ editError() }}</p>
+              }
+              <div class="adminActions">
+                <button class="btn btnSecondary" type="button" (click)="cancelEditing()" [disabled]="isSaving()">Cancel</button>
+                <button class="btn btnEdit" type="submit" [disabled]="isSaving() || editForm.invalid">
+                  {{ isSaving() ? 'Saving...' : 'Save changes' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <h1 class="movieTitle">{{ currentMovie.title }}</h1>
+            <div class="metaRow">
+              <span class="genreTag">{{ currentMovie.genre }}</span>
+              <span class="yearTag">{{ currentMovie.releaseYear }}</span>
+            </div>
+            <p class="movieDescription">{{ currentMovie.description }}</p>
+            <div class="actionRow">
+              @if (currentMovie.movieUrl) {
+                <a [href]="currentMovie.movieUrl" target="_blank" rel="noopener noreferrer" class="btn btnWatch">
+                  Watch movie
+                </a>
+              }
+              <div class="adminActions">
+                <button class="btn btnEdit" type="button" (click)="startEditing()">Change</button>
+                <button
+                  class="btn btnDelete"
+                  type="button"
+                  [disabled]="isDeletingMovie()"
+                  (click)="deleteMovie()">
+                  {{ isDeletingMovie() ? 'Deleting...' : 'Delete movie' }}
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+      @if (deleteMovieError()) {
+        <p class="errorMessage">{{ deleteMovieError() }}</p>
+      }
+
+      <div class="commentsSection">
+        <div class="commentsHeader">
+          <h2 class="commentsTitle">Comments</h2>
+          <span class="commentsCount">{{ currentMovie.movieComments?.length || 0 }}</span>
+        </div>
+
+        <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="commentForm">
+          <input
+            class="commentInput"
+            type="text"
+            maxlength="50"
+            formControlName="title"
+            placeholder="Comment title" />
+          <textarea
+            class="commentInput"
+            maxlength="250"
+            placeholder="Leave your comment..."
+            rows="3"
+            formControlName="text"></textarea>
+          @if (commentError()) {
+            <p class="errorMessage">{{ commentError() }}</p>
+          }
+          <div class="formActions">
+            <button class="btn btnPrimary" type="submit" [disabled]="isSubmittingComment() || commentForm.invalid">
+              {{ isSubmittingComment() ? 'Sending...' : 'Send' }}
+            </button>
+          </div>
+        </form>
+
+        <div class="commentsList">
+          @if (currentMovie.movieComments?.length) {
+            @for (comment of currentMovie.movieComments; track comment.id) {
+              <div class="commentItem">
+                <div class="commentUser">{{ comment.userLogin || 'Anonymous' }} · {{ comment.title }}</div>
+                <div class="commentText">{{ comment.text }}</div>
+                <button
+                  class="btn btnDelete"
+                  type="button"
+                  [disabled]="deletingCommentId() !== null"
+                  (click)="deleteComment(comment.id)">
+                  {{ deletingCommentId() === comment.id ? 'Deleting...' : 'Delete' }}
+                </button>
+              </div>
+            }
+          } @else {
+            <p class="noComments">No comments yet. Be the first one!</p>
+          }
+        </div>
+        @if (deleteCommentError()) {
+          <p class="errorMessage">{{ deleteCommentError() }}</p>
+        }
+      </div>
+    </div>
+  }
+</div>

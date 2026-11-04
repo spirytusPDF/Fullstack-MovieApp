@@ -1,0 +1,115 @@
+<div class="authContainer">
+  <div class="authCard">
+    <h2 class="authTitle">Sign Up</h2>
+    <p class="authSubtitle">Join us to explore movies!</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="registerForm">
+      
+      <div class="formGroup">
+        <label for="login">Login</label>
+        <input 
+          id="login" 
+          type="text" 
+          formControlName="Login" 
+          placeholder="Choose a username..." 
+        />
+        @if (registerForm.get('Login')?.touched && registerForm.get('Login')?.hasError('required')) {
+          <small class="errorText">Login is required</small>
+        }
+      </div>
+
+      <div class="formRow">
+        <div class="formGroup">
+          <label for="name">Name</label>
+          <input 
+            id="name" 
+            type="text" 
+            formControlName="Name" 
+            placeholder="Your name" 
+          />
+          @if (registerForm.get('Name')?.touched && registerForm.get('Name')?.hasError('required')) {
+            <small class="errorText">Name is required</small>
+          }
+        </div>
+
+        <div class="formGroup">
+          <label for="surname">Surname</label>
+          <input 
+            id="surname" 
+            type="text" 
+            formControlName="Surname" 
+            placeholder="Your surname" 
+          />
+          @if (registerForm.get('Surname')?.touched && registerForm.get('Surname')?.hasError('required')) {
+            <small class="errorText">Surname is required</small>
+          }
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div class="formGroup flex2">
+          <label for="email">Email</label>
+          <input 
+            id="email" 
+            type="email" 
+            formControlName="Email" 
+            placeholder="example@mail.com" 
+          />
+          @if (registerForm.get('Email')?.touched && registerForm.get('Email')?.hasError('email')) {
+            <small class="errorText">Enter a valid email</small>
+          }
+        </div>
+
+        <div class="formGroup flex1">
+          <label for="age">Age</label>
+          <input 
+            id="age" 
+            type="number" 
+            formControlName="Age" 
+            placeholder="18" 
+          />
+          @if (registerForm.get('Age')?.touched && registerForm.get('Age')?.hasError('min')) {
+            <small class="errorText">Must be 10+</small>
+          }
+        </div>
+      </div>
+
+      <div class="formGroup">
+        <label for="password">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          formControlName="Password" 
+          placeholder="••••••••" 
+        />
+      </div>
+
+      <div class="formGroup">
+        <label for="confirmPassword">Confirm Password</label>
+        <input 
+          id="confirmPassword" 
+          type="password" 
+          formControlName="ConfirmPassword" 
+          placeholder="••••••••" 
+        />
+        @if (registerForm.hasError('passwordsMismatch') && registerForm.get('ConfirmPassword')?.touched) {
+          <small class="errorText">Passwords do not match</small>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="serverErrorAlert">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <button type="submit" class="submitBtn" [disabled]="registerForm.invalid">
+        Create Account
+      </button>
+
+      <p class="switchAuth">
+        Already have an account? <a routerLink="/login">Sign in here</a>
+      </p>
+    </form>
+  </div>
+</div>
