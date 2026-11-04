@@ -31,7 +31,7 @@ namespace MoviesWeb.Server.Controllers
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public IActionResult AddComment(int id)
+        public IActionResult DeleteComment(int id)
         {
             var res = _commentService.DeleteComment(id);
             if (!res.IsSucces) return StatusCode(500, res.Message);
