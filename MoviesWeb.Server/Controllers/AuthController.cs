@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,8 @@ namespace MoviesWeb.Server.Controllers
     [ApiController]
     public class AuthController(UserService _userService,
         IValidator<UserRegisterContract> _registerValidator,
-        IValidator<UserLoginContract> _loginValidator) : ControllerBase
+        IValidator<UserLoginContract> _loginValidator,
+        IMapper _mapper) : ControllerBase
     {
         [HttpPost("signup")]
         public IActionResult SignUp([FromBody] UserRegisterContract registerContract)
@@ -24,14 +26,7 @@ namespace MoviesWeb.Server.Controllers
             var valid = _registerValidator.Validate(registerContract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
 
-            var userDto = new UserRegisterDTO() {
-                Login = registerContract.Login,
-                Password = registerContract.Password,
-                Name = registerContract.Name,
-                Surname = registerContract.Surname,
-                Age = registerContract.Age,
-                Email = registerContract.Email,
-            };
+            var userDto = _mapper.Map<UserRegisterDTO>(registerContract);
             var res = _userService.RegisterUser(userDto);
             if (res.IsSucces) return Ok();
             else return StatusCode(500, res.Message);
@@ -43,12 +38,7 @@ namespace MoviesWeb.Server.Controllers
             var valid = _loginValidator.Validate(loginContract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
 
-            var userDto = new UserLoginDTO()
-            {
-                Login = loginContract.Login,
-                Password = loginContract.Password,
-                Email = loginContract.Email,
-            };
+            var userDto = _mapper.Map<UserLoginDTO>(loginContract);
             var principal = _userService.LoginUser(userDto);
             if (principal is null)
             {

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ namespace MoviesWeb.Server.Controllers
     [ApiController]
     public class MoviesController(MovieService movieService
         , IValidator<AddMovieContract> _addValidator,
-        IValidator<UpdateMovieContract> _updateValidator) : ControllerBase
+        IValidator<UpdateMovieContract> _updateValidator,
+        IMapper _mapper) : ControllerBase
     {
         private readonly MovieService _movieService = movieService;
         
@@ -41,16 +43,7 @@ namespace MoviesWeb.Server.Controllers
         {
             var valid = _addValidator.Validate(contract);
             if(!valid.IsValid) return BadRequest(valid.Errors);
-            var dto = new MovieCreateDTO() 
-            {
-                Title = contract.Title,
-                Description = contract.Description,
-                Genre = contract.Genre,
-                Rating = contract.Rating,
-                ReleaseYear = contract.ReleaseYear,
-                PosterUrl = contract.PosterUrl,
-                MovieUrl = contract.MovieUrl,
-            };
+            var dto = _mapper.Map<MovieCreateDTO>(contract);
             var res = _movieService.AddMovie(dto);
             if (!res.IsSucces) return StatusCode(500,res.Message);
             else return Ok();
@@ -60,16 +53,8 @@ namespace MoviesWeb.Server.Controllers
         {
             var valid = _updateValidator.Validate(contract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
-            var dto = new UpdateMovieDTO()
-            {
-                Id = id,
-                Description = contract.Description,
-                Genre = contract.Genre,
-                Rating = contract.Rating,
-                ReleaseYear = contract.ReleaseYear,
-                PosterUrl = contract.PosterUrl,
-                MovieUrl = contract.MovieUrl,
-            };
+            var dto = _mapper.Map<UpdateMovieDTO>(contract);
+            dto.Id = id;
             var res = _movieService.UpdateMovie(dto);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();

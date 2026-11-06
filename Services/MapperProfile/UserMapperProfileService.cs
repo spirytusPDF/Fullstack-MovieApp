@@ -4,9 +4,9 @@ using Services.DTOs.User;
 
 namespace MoviesWeb.Server.MapperProfile
 {
-    public class UserMapperProfile: Profile
+    public class UserMapperProfileService: Profile
     {
-        public UserMapperProfile() 
+        public UserMapperProfileService() 
         {
             CreateMap<User, UserRegisterDTO>().ReverseMap();
             CreateMap<User, UserResponseDTO>().ReverseMap();

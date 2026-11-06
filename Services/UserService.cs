@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using AutoMapper;
+using Domain;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Repositories.UserRepo;
@@ -10,7 +11,7 @@ using System.Text;
 
 namespace Services
 {
-    public class UserService(IUserRepository userRepository)
+    public class UserService(IUserRepository userRepository, IMapper _mapper)
     {
         private readonly IUserRepository _userRepository = userRepository;
 
@@ -19,17 +20,9 @@ namespace Services
             if (_userRepository.FindUser(userRegisterDTO.Email) != null)
                 return new Result() { IsSucces = false, Message = "User already exists. Please, sign in" };
 
-            var user = new User()
-            {
-                Name = userRegisterDTO.Name,
-                Surname = userRegisterDTO.Surname,
-                Login = userRegisterDTO.Login,
-                Password = userRegisterDTO.Password,
-                Email = userRegisterDTO.Email,
-                Age = userRegisterDTO.Age,
-                Created = DateTime.Now
-
-            };
+            var user = _mapper.Map<User>(userRegisterDTO);
+            user.Created = DateTime.Now;
+           
             var result = _userRepository.Register(user);
             if (result) return new Result() { IsSucces = true, Message = "Registered! Please sign in" };
             else return new Result() { IsSucces = false, Message = "Could't register user" };
@@ -70,13 +63,7 @@ namespace Services
             var user = _userRepository.FindUser(email);
             if (user == null) return null;
 
-            return new UserResponseDTO()
-            {
-                Id = user.Id,
-                Login = user.Login,
-                Name = user.Name,
-                Surname = user.Surname,
-            };
+            return _mapper.Map<UserResponseDTO>(user);
 
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MoviesWeb.Server.Contracts.Validators;
+using MoviesWeb.Server.MapperProfile;
 using Repositories.CommentsRepo;
 using Repositories.Contexts;
 using Repositories.MovieRepo;
@@ -51,6 +52,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
+builder.Services.AddAutoMapper(opt => {
+    opt.AddProfile<CommentMapperProfile>();
+    opt.AddProfile<MovieMapperProfile>();
+    opt.AddProfile<UserMapperProfile>();
+
+    opt.AddProfile<CommentMapperProfileService>();
+    opt.AddProfile<MovieMapperProfileService>();
+    opt.AddProfile<UserMapperProfileService>();
+
+
+});
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoviesWeb.Server.Contracts;
@@ -10,7 +11,8 @@ namespace MoviesWeb.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class CommentsController(CommentService _commentService,
-        IValidator<AddCommentContract> _addValidator) : ControllerBase
+        IValidator<AddCommentContract> _addValidator,
+        IMapper _mapper) : ControllerBase
     {
         [HttpPost]
         public IActionResult AddComment(AddCommentContract contract, [FromQuery] int movieId, [FromQuery] int userId)
@@ -18,13 +20,9 @@ namespace MoviesWeb.Server.Controllers
             var valid = _addValidator.Validate(contract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
 
-            var comment = new CommentCreateDTO()
-            {
-                Title = contract.Title,
-                Text = contract.Text,
-                UserId = userId,
-                MovieId = movieId
-            };
+            var comment = _mapper.Map<CommentCreateDTO>(contract);
+            comment.UserId = userId;
+            comment.MovieId = movieId;
             var res = _commentService.AddComment(comment);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
