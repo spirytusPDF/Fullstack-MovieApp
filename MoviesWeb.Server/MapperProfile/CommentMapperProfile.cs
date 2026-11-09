@@ -9,7 +9,7 @@ namespace MoviesWeb.Server.MapperProfile
     {
         public CommentMapperProfile()
         {
-            CreateMap<AddMovieContract, CommentCreateDTO>().ReverseMap();
+            CreateMap<AddCommentContract, CommentCreateDTO>().ReverseMap();
         }
     }
 }
