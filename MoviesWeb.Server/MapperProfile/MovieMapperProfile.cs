@@ -11,6 +11,7 @@ namespace MoviesWeb.Server.MapperProfile
         {
             CreateMap<AddMovieContract, MovieCreateDTO>().ReverseMap();
             CreateMap<UpdateMovieContract, UpdateMovieDTO>().ReverseMap();
+            CreateMap<MovieParamsContract, MovieParamsDTO>().ReverseMap();
         }
     }
 }

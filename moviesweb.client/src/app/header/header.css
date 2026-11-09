@@ -1,8 +1,7 @@
-
 header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 12px;
   padding: 14px 28px;
   background: linear-gradient(135deg, #fff5f8 0%, #ffedf3 100%);
   border-bottom: 2px solid #ffd6e5;
@@ -10,10 +9,21 @@ header {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.brand a {
+  text-decoration: none;
+}
+
 header h2 {
   margin: 0;
-  font-size: 1.6rem;
   color: #d85a8a;
+  font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: 0.5px;
   cursor: pointer;
@@ -24,107 +34,151 @@ header h2:hover {
   transform: scale(1.03);
 }
 
-header form {
+.movie-search {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 8px;
   margin: 0;
 }
 
-header input[type="text"] {
-  padding: 10px 18px;
+.movie-search input,
+.movie-search select,
+.catalog-nav select {
+  min-height: 40px;
+  padding: 8px 14px;
   border: 2px solid #ffccd5;
-  border-radius: 25px;
+  border-radius: 22px;
   outline: none;
   background-color: #ffffff;
   color: #5a4b51;
-  font-size: 0.95rem;
-  width: 240px;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  font: inherit;
 }
 
-header input[type="text"]::placeholder {
-  color: #e2a8b9;
+.movie-search input {
+  width: min(280px, 100%);
 }
 
-header input[type="text"]:focus {
+.movie-search input:focus,
+.movie-search select:focus,
+.catalog-nav select:focus {
   border-color: #ff85a2;
-  width: 280px;
   box-shadow: 0 0 10px rgba(255, 133, 162, 0.3);
 }
 
-header p {
+.sign-in-prompt {
   margin: 0;
   color: #b86b85;
   font-style: italic;
   font-weight: 500;
 }
 
-/* Навигация пользователя */
-.user-nav {
+.user-nav,
+.catalog-nav {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+}
+
+.catalog-nav {
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid #ffd6e5;
 }
 
 .user-name {
-  color: #7a4a58;
-  font-weight: 600;
-  font-size: 0.95rem;
-  background: #ffe3ec;
   padding: 6px 14px;
-  border-radius: 20px;
   border: 1px solid #ffc2d4;
+  border-radius: 20px;
+  background: #ffe3ec;
+  color: #7a4a58;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
-.user-nav button {
+.user-nav button,
+.user-nav .header-button,
+.catalog-nav button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 20px;
   background-color: #ff85a2;
   color: #ffffff;
-  border: none;
-  padding: 9px 18px;
-  border-radius: 20px;
-  font-weight: 600;
+  font: inherit;
   font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
   box-shadow: 0 3px 8px rgba(255, 133, 162, 0.3);
   transition: all 0.2s ease;
 }
 
-.user-nav .header-button {
-  background-color: #ff85a2;
-  color: #ffffff;
-  border: none;
-  padding: 9px 18px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  box-shadow: 0 3px 8px rgba(255, 133, 162, 0.3);
-  transition: all 0.2s ease;
-}
-
-.user-nav .header-button:hover {
+.user-nav button:hover,
+.user-nav .header-button:hover,
+.catalog-nav button:hover {
   background-color: #f76c8e;
   transform: translateY(-1.5px);
   box-shadow: 0 5px 12px rgba(255, 133, 162, 0.4);
-}
-
-.user-nav button:hover {
-  background-color: #f76c8e;
-  transform: translateY(-1.5px);
-  box-shadow: 0 5px 12px rgba(255, 133, 162, 0.4);
-}
-
-.user-nav button:active {
-  transform: translateY(0);
 }
 
 .user-nav button:last-child {
+  border: 2px solid #ffb3c6;
   background-color: #ffffff;
   color: #d85a8a;
-  border: 2px solid #ffb3c6;
   box-shadow: none;
 }
 
 .user-nav button:last-child:hover {
-  background-color: #fff0f5;
   border-color: #ff85a2;
+  background-color: #fff0f5;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 760px) {
+  header {
+    padding: 14px 16px;
+  }
+
+  .header-main {
+    flex-wrap: wrap;
+  }
+
+  .movie-search {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .user-nav {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-name {
+    display: none;
+  }
+
+  .movie-search input {
+    min-width: 0;
+  }
+
+  .catalog-nav {
+    gap: 7px;
+  }
+
+  .catalog-nav button,
+  .catalog-nav select {
+    font-size: 0.82rem;
+    padding: 8px 11px;
+  }
 }

@@ -1,8 +1,8 @@
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { MovieCard } from '../movie-card/movie-card';
-import { MovieService } from '../services/movie-service';
+import { MoviePage, MovieService } from '../services/movie-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EMPTY, catchError, debounceTime, map, of, switchMap, tap } from 'rxjs';
+import { EMPTY, catchError, debounceTime, switchMap, tap } from 'rxjs';
 
 @Component({
   imports: [MovieCard],
@@ -17,26 +17,37 @@ export class Cathalog {
   movies = signal<MovieResponse[]>([]);
   isLoading = signal<boolean>(true);
   errorMessage: string | null = null;
-  private allMovies: MovieResponse[] | null = null;
+  currentPage = signal(1);
+  pageSize = signal(6);
+  totalCount = signal(0);
+  totalPages = signal(1);
+  hasPrevious = signal(false);
+  hasNext = signal(false);
+  pageNumbers = computed(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const start = Math.max(1, Math.min(current - 2, total - 4));
+    const end = Math.min(total, start + 4);
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  });
+
   ngOnInit(): void {
-    this.movieService.searchTerm.pipe(
-      map((term) => term.trim()),
+    this.movieService.catalogQuery.pipe(
       debounceTime(250),
       tap(() => {
         this.isLoading.set(true);
         this.errorMessage = null;
       }),
-      switchMap((term) => {
-        const request = this.allMovies !== null
-          ? of(this.allMovies)
-          : this.movieService.getMovies().pipe(
-            tap((data) => this.allMovies = data)
-          );
-
-        return request.pipe(
-          map((data) => this.filterMovies(data, term)),
-          tap((data) => {
-            this.movies.set(data);
+      switchMap(({ filters, sort, page, pageSize }) => {
+        return this.movieService.getFilteredMovies(filters, page, pageSize, sort).pipe(
+          tap((data: MoviePage) => {
+            this.movies.set(data.movies);
+            this.currentPage.set(data.pagination.page);
+            this.pageSize.set(data.pagination.pageSize);
+            this.totalCount.set(data.pagination.totalCount);
+            this.totalPages.set(data.pagination.totalPages);
+            this.hasPrevious.set(data.pagination.hasPrevious);
+            this.hasNext.set(data.pagination.hasNext);
             this.isLoading.set(false);
           }),
           catchError((err: unknown) => {
@@ -51,16 +62,12 @@ export class Cathalog {
   }
 
   loadMovies(): void {
-    this.movieService.setSearchTerm(this.movieService.searchTerm.value);
+    this.movieService.refreshCatalog();
   }
 
-  private filterMovies(movies: MovieResponse[], term: string): MovieResponse[] {
-    if (!term) return movies;
-
-    const query = term.toLocaleLowerCase();
-    return movies.filter((movie) =>
-      movie.title.toLocaleLowerCase().includes(query) ||
-      movie.genre.toLocaleLowerCase().includes(query)
-    );
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
+      this.movieService.setPage(page);
+    }
   }
 }

@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Repositories.MovieRepo;
+using Repositories.Queries;
 using Services.DTOs.Movie;
+using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -39,11 +43,6 @@ namespace Services
         }
 
 
-        public List<MovieResponseDTO> GetMovies()
-        {
-            var movies = _movieRepository.GetAll();
-            return _mapper.Map<List<MovieResponseDTO>>(movies);
-        }
         public MovieResponseDTO? GetMovie(int id)
         {
             var movie = _movieRepository.GetOne(id);
@@ -52,10 +51,29 @@ namespace Services
             return _mapper.Map<MovieResponseDTO>(movie);
         }
 
-        public List<MovieResponseDTO> SearchMovies(string keyWord)
+        public Tuple<List<MovieResponseDTO>, int> GetMovies(MovieParamsDTO parameters)
         {
-            var movies = _movieRepository.Search(keyWord);
-            return _mapper.Map<List<MovieResponseDTO>>(movies);
+            
+            var parametersOrg = _mapper.Map<MovieParameters>(parameters);
+            if(parameters.Page == null || parameters.Page <= 0) parametersOrg.Page = 1;
+            if (parameters.PageSize == null || parameters.PageSize <= 0) parametersOrg.PageSize = 10;
+            if (string.IsNullOrEmpty(parametersOrg.Sort)) parametersOrg.Sort = string.Empty;
+
+            if (parametersOrg.Key != null)
+            {
+                
+                var moviesByKey = _movieRepository.GetPagedMovies(x =>
+                EF.Functions.Like(x.Title, $"%{parametersOrg.Key}%") ||
+                EF.Functions.Like(x.Genre, $"%{parametersOrg.Key}%") ||
+                EF.Functions.Like(x.Description, $"%{parametersOrg.Key}%"), 
+                parametersOrg.Page, parametersOrg.PageSize, parametersOrg.Sort);
+
+                return new(_mapper.Map<List<MovieResponseDTO>>(moviesByKey.Item1), moviesByKey.Item2);
+            }
+
+            var filter = ExpressionFilterBuilder.BuildFilter<Movie, MovieParameters>(parametersOrg);
+            var movies = _movieRepository.GetPagedMovies(filter, parametersOrg.Page, parametersOrg.PageSize, parametersOrg.Sort);
+            return new(_mapper.Map<List<MovieResponseDTO>>(movies.Item1), movies.Item2);
         }
     }
 }

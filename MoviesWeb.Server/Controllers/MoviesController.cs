@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using MoviesWeb.Server.Contracts;
 using Services;
 using Services.DTOs.Movie;
+using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MoviesWeb.Server.Controllers
 {
@@ -19,11 +21,7 @@ namespace MoviesWeb.Server.Controllers
         private readonly MovieService _movieService = movieService;
         
 
-        [HttpGet("all")]
-        public ActionResult<List<MovieResponseDTO>> GetAll()
-        {
-            return Ok(_movieService.GetMovies());
-        }
+        
         [HttpGet("{id:int:min(1)}")]
         public ActionResult<MovieResponseDTO> GetOne(int id)
         {
@@ -32,10 +30,23 @@ namespace MoviesWeb.Server.Controllers
             else return Ok(movie);
         }
 
-        [HttpGet("search")]
-        public ActionResult<List<MovieResponseDTO>> Search([FromQuery] string keyword)
+        [HttpGet("view")]
+        public ActionResult<List<MovieResponseDTO>> GetMovies([FromQuery] MovieParamsContract parameters)
         {
-            return Ok(_movieService.SearchMovies(keyword));
+            var parametersDto = _mapper.Map<MovieParamsDTO>(parameters);
+
+            var (items, totalCount) = movieService.GetMovies(parametersDto);
+            var metadata = new
+            {
+                totalCount,
+                parametersDto.Page,
+                parametersDto.PageSize
+            };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(metadata));
+
+            return Ok(items);
+
         }
 
         [HttpPost("newMovie")]

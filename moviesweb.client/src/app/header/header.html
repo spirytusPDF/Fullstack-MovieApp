@@ -1,32 +1,65 @@
 <header>
-    <div>
-        @if(user()){
-            <a [ngStyle]="{'text-decoration': 'none'}" routerLink="/all"><h2>Movies🍿</h2></a>
-        }
-        @else {<h2>Movies🍿</h2>}
+  <div class="header-main">
+    <div class="brand">
+      @if (user()) {
+        <a routerLink="/all"><h2>Movies🍿</h2></a>
+      } @else {
+        <h2>Movies🍿</h2>
+      }
     </div>
 
-    <div>
-        @if(user()){
-            <form>
-            <input type="text"
-            [(ngModel)]="searchQuery"
-            name="searchQuery"
-            (input)="onSearch()"
-            placeholder="Search movies...">
-            </form>
-        }
-        @else {<p>Let's sign in first!</p>}
-        
-    </div>
+    @if (user()) {
+      <form class="movie-search" (submit)="$event.preventDefault()">
+        <select
+          aria-label="Search by"
+          [(ngModel)]="searchField"
+          (ngModelChange)="onSearch()"
+          name="searchField">
+          <option value="Key">All fields</option>
+          <option value="Id">ID</option>
+          <option value="Title">Title</option>
+          <option value="Genre">Genre</option>
+          <option value="Description">Description</option>
+          <option value="Year">Release year</option>
+          <option value="Rating">Rating</option>
+        </select>
+        <input
+          [type]="searchField === 'Id' || searchField === 'Year' || searchField === 'Rating' ? 'number' : 'search'"
+          [step]="searchField === 'Rating' ? '0.1' : '1'"
+          [(ngModel)]="searchQuery"
+          name="searchQuery"
+          (input)="onSearch()"
+          placeholder="Search movies...">
+      </form>
+    } @else {
+      <p class="sign-in-prompt">Let's sign in first!</p>
+    }
 
     <nav class="user-nav">
-        @if (user()) {
-          <button (click)="openAddMovieModal()">Add a movie</button>
-          <span class="user-name">👤 {{ user()?.username }}</span>
-          <button (click)="onLogout()">Logout</button>
-        } @else {
-          <a class="header-button" routerLink="/register">Register</a>
-        }
-      </nav>
+      @if (user()) {
+        <button (click)="openAddMovieModal()">Add a movie</button>
+        <span class="user-name">👤 {{ user()?.username }}</span>
+        <button (click)="onLogout()">Logout</button>
+      } @else {
+        <a class="header-button" routerLink="/register">Register</a>
+      }
+    </nav>
+  </div>
+
+  @if (user()) {
+    <nav class="catalog-nav" aria-label="Movie categories">
+      <label class="genre-select">
+        <span class="visually-hidden">Filter by genre</span>
+        <select [ngModel]="selectedGenre" (ngModelChange)="onGenreChange($event)" name="genre">
+          <option value="">All genres</option>
+          @for (genre of genres; track genre) {
+            <option [value]="genre">{{ genre }}</option>
+          }
+        </select>
+      </label>
+      <button (click)="setSort('latest')">Latest films</button>
+      <button (click)="setSort('older')">Older films</button>
+      <button (click)="setSort('rating')">Best rated</button>
+    </nav>
+  }
 </header>

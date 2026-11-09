@@ -18,9 +18,24 @@
     <p class="emptyState">No movies found.</p>
   }
   <div class="moviesGrid">
-    @for (movie of movies(); track movie.title){
+    @for (movie of movies(); track movie.id){
         <app-movie-card [movie]="movie"></app-movie-card>
     }
-      
   </div>
+  @if (!isLoading() && !errorMessage) {
+    <nav class="pagination" aria-label="Movie pages">
+      <button (click)="goToPage(currentPage() - 1)" [disabled]="!hasPrevious()">Previous</button>
+      @for (page of pageNumbers(); track page) {
+        <button
+          class="page-number"
+          [class.current-page]="page === currentPage()"
+          [attr.aria-current]="page === currentPage() ? 'page' : null"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+      }
+      <button (click)="goToPage(currentPage() + 1)" [disabled]="!hasNext()">Next</button>
+      <span>{{ totalCount() }} movies</span>
+    </nav>
+  }
 </div>

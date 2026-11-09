@@ -31,6 +31,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<MovieAddValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateMovieValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserLoginValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<MovieParamsValidator>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -60,6 +61,8 @@ builder.Services.AddAutoMapper(opt => {
     opt.AddProfile<CommentMapperProfileService>();
     opt.AddProfile<MovieMapperProfileService>();
     opt.AddProfile<UserMapperProfileService>();
+
+
 
 
 });

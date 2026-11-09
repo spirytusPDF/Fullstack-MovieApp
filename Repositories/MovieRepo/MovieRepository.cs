@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Contexts;
+using Repositories.Queries;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Repositories.MovieRepo
@@ -42,15 +44,6 @@ namespace Repositories.MovieRepo
             }
         }
 
-        public List<Movie> GetAll()
-        {
-            return _context.Movies
-            .AsNoTracking()
-            .Include(m => m.MovieComments)          
-            .ThenInclude(c => c.user)          
-            .ToList();
-        }
-
         public Movie? GetOne(int id)
         {
             return _context.Movies
@@ -59,10 +52,21 @@ namespace Repositories.MovieRepo
                 .FirstOrDefault(m => m.Id == id);
         }
 
-        public List<Movie> Search(string keyword)
+        public Tuple<List<Movie>, int> GetPagedMovies(Expression<Func<Movie, bool>> predicate, int page, int size, string sort)
         {
-            return _context.Movies.Include(m => m.MovieComments).Where(m=>m.Title.ToLower().Contains(keyword) 
-            || m.Genre.ToLower().Contains(keyword)).ToList();
+            var query = _context.Movies.Where(predicate);
+            var totalSize = query.Count();
+            query = sort?.ToLowerInvariant() switch
+            {
+                "latest" => query.OrderByDescending(m => m.ReleaseYear).ThenBy(m => m.Id),
+                "older" => query.OrderBy(m => m.ReleaseYear).ThenBy(m => m.Id),
+                "rating" => query.OrderByDescending(m => m.Rating)
+                                  .ThenByDescending(m => m.ReleaseYear)
+                                  .ThenBy(m => m.Id),
+                _ => query.OrderBy(m => m.Title).ThenBy(m => m.Id)
+            };
+            query = query.Skip((page - 1) * size).Take(size);
+            return new (query.ToList(), totalSize);
         }
 
         public bool UpdateMovie(Movie movie)
