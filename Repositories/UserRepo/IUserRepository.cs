@@ -7,9 +7,11 @@ namespace Repositories.UserRepo
 {
     public interface IUserRepository
     {
-        public bool Register(User user);
-        public User FindUser(string login);
-        public bool Delete(User user);
+        public Task RegisterAsync(User user);
+        public Task<User?> FindUserAsync(string login);
+        public Task Delete(User user);
+
+        public Task<bool> SaveChangesAsync();
 
     }
 }

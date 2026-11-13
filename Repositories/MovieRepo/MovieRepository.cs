@@ -12,47 +12,40 @@ namespace Repositories.MovieRepo
     public class MovieRepository(AppDbContext context) : IMovieRepository
     {
         private readonly AppDbContext _context = context;
-        public bool AddMovie(Movie movie)
+        public async Task AddMovieAsync(Movie movie)
         {
             try
             {
-               _context.Movies.Add(movie);
-               var res = _context.SaveChanges();
-                return res > 0;
+               await _context.Movies.AddAsync(movie);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
             }
         }
 
-        public bool DeleteMovie(Movie movie)
+        public async Task DeleteMovie(Movie movie)
         {
             try
             {
                 _context.Movies.Remove(movie);
-                var res = _context.SaveChanges();
-                return res > 0;
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
             }
         }
 
-        public Movie? GetOne(int id)
+        public async Task<Movie?> GetOneAsync(int id)
         {
-            return _context.Movies
-                .Include(m => m.MovieComments)
+            return await _context.Movies.Include(m => m.MovieComments)
                 .ThenInclude(c => c.user)
-                .FirstOrDefault(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        public Tuple<List<Movie>, int> GetPagedMovies(Expression<Func<Movie, bool>> predicate, int page, int size, string sort)
+        public async Task<Tuple<List<Movie>, int>> GetPagedMoviesAsync(Expression<Func<Movie, bool>> predicate, int page, int size, string sort)
         {
             var query = _context.Movies.Where(predicate);
             var totalSize = query.Count();
@@ -66,14 +59,14 @@ namespace Repositories.MovieRepo
                 _ => query.OrderBy(m => m.Title).ThenBy(m => m.Id)
             };
             query = query.Skip((page - 1) * size).Take(size);
-            return new (query.ToList(), totalSize);
+            return  new (await query.ToListAsync(), totalSize);
         }
 
-        public bool UpdateMovie(Movie movie)
+        public async Task UpdateMovieAsync(Movie movie)
         {
             try
             {
-                var oldMovie = _context.Movies.FirstOrDefault(m => m.Id == movie.Id);
+                var oldMovie = await _context.Movies.FirstOrDefaultAsync(m => m.Id == movie.Id);
                 if (oldMovie != null)
                 {
                     oldMovie.Description = movie.Description;
@@ -82,17 +75,19 @@ namespace Repositories.MovieRepo
                     oldMovie.Rating = movie.Rating;
                     oldMovie.PosterUrl = movie.PosterUrl;
                     oldMovie.MovieUrl = movie.MovieUrl;
-                    var res = _context.SaveChanges();
-                    return res > 0;
+                    
                 }
-                else return false;
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
             }
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            var changes = await _context.SaveChangesAsync();
+            return changes > 0 ? true : false;
         }
     }
 }

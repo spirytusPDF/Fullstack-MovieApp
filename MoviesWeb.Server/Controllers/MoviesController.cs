@@ -23,19 +23,19 @@ namespace MoviesWeb.Server.Controllers
 
         
         [HttpGet("{id:int:min(1)}")]
-        public ActionResult<MovieResponseDTO> GetOne(int id)
+        public async Task<ActionResult<MovieResponseDTO>> GetOneAsync(int id)
         {
-            var movie = _movieService.GetMovie(id);
+            var movie = await _movieService.GetMovieAsync(id);
             if (movie == null) return NotFound("No movie found");
             else return Ok(movie);
         }
 
         [HttpGet("view")]
-        public ActionResult<List<MovieResponseDTO>> GetMovies([FromQuery] MovieParamsContract parameters)
+        public async Task<ActionResult<List<MovieResponseDTO>>> GetMoviesAsync([FromQuery] MovieParamsContract parameters)
         {
             var parametersDto = _mapper.Map<MovieParamsDTO>(parameters);
 
-            var (items, totalCount) = movieService.GetMovies(parametersDto);
+            var (items, totalCount) = await movieService.GetMoviesAsync(parametersDto);
             var metadata = new
             {
                 totalCount,
@@ -50,30 +50,30 @@ namespace MoviesWeb.Server.Controllers
         }
 
         [HttpPost("newMovie")]
-        public IActionResult AddMovie([FromBody]AddMovieContract contract)
+        public async Task<IActionResult> AddMovie([FromBody]AddMovieContract contract)
         {
             var valid = _addValidator.Validate(contract);
             if(!valid.IsValid) return BadRequest(valid.Errors);
             var dto = _mapper.Map<MovieCreateDTO>(contract);
-            var res = _movieService.AddMovie(dto);
+            var res = await _movieService.AddMovieAsync(dto);
             if (!res.IsSucces) return StatusCode(500,res.Message);
             else return Ok();
         }
         [HttpPost("update/{id:int:min(1)}")]
-        public IActionResult Update([FromBody] UpdateMovieContract contract, [FromRoute] int id)
+        public async Task<IActionResult> Update([FromBody] UpdateMovieContract contract, [FromRoute] int id)
         {
             var valid = _updateValidator.Validate(contract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
             var dto = _mapper.Map<UpdateMovieDTO>(contract);
             dto.Id = id;
-            var res = _movieService.UpdateMovie(dto);
+            var res = await _movieService.UpdateMovieAsync(dto);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
         }
         [HttpPost("delete/{id:int:min(1)}")]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var res = _movieService.DeleteMovie(id);
+            var res = await _movieService.DeleteMovie(id);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
         }

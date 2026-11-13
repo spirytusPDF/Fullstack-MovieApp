@@ -15,7 +15,7 @@ namespace MoviesWeb.Server.Controllers
         IMapper _mapper) : ControllerBase
     {
         [HttpPost]
-        public IActionResult AddComment(AddCommentContract contract, [FromQuery] int movieId, [FromQuery] int userId)
+        public async Task<IActionResult> AddComment(AddCommentContract contract, [FromQuery] int movieId, [FromQuery] int userId)
         {
             var valid = _addValidator.Validate(contract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
@@ -23,15 +23,15 @@ namespace MoviesWeb.Server.Controllers
             var comment = _mapper.Map<CommentCreateDTO>(contract);
             comment.UserId = userId;
             comment.MovieId = movieId;
-            var res = _commentService.AddComment(comment);
+            var res = await _commentService.AddCommentAsync(comment);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
         }
 
         [HttpDelete("{id:int:min(1)}")]
-        public IActionResult DeleteComment(int id)
+        public async Task<IActionResult> DeleteComment(int id)
         {
-            var res = _commentService.DeleteComment(id);
+            var res = await _commentService.DeleteComment(id);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
         }

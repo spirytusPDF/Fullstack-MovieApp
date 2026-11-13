@@ -10,13 +10,15 @@ namespace Repositories.MovieRepo
     public interface IMovieRepository
     {
         
-        public Movie? GetOne(int id);
-        public Tuple<List<Movie>, int> GetPagedMovies(Expression<Func<Movie, bool>> predicate, int page, int size, string sort);
+        public Task<Movie?> GetOneAsync(int id);
+        public Task<Tuple<List<Movie>, int>>  GetPagedMoviesAsync(Expression<Func<Movie, bool>> predicate, int page, int size, string sort);
 
 
-        public bool AddMovie(Movie movie);
-        public bool UpdateMovie(Movie movie);
-        public bool DeleteMovie(Movie movie);
+        public Task AddMovieAsync(Movie movie);
+        public Task UpdateMovieAsync(Movie movie);
+        public Task DeleteMovie(Movie movie);
+
+        public Task<bool> SaveChangesAsync();
 
     }
 }

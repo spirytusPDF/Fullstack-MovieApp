@@ -16,42 +16,44 @@ namespace Services
     {
         private readonly IMovieRepository _movieRepository = movieRepository;
 
-        public Result AddMovie(MovieCreateDTO movieCreateDTO)
+        public async Task<Result> AddMovieAsync(MovieCreateDTO movieCreateDTO)
         {
             var movie = _mapper.Map<Movie>(movieCreateDTO);
-            var res = _movieRepository.AddMovie(movie);
+            await _movieRepository.AddMovieAsync(movie);
+            var res = await _movieRepository.SaveChangesAsync();
             if (res) return new Result() { IsSucces = true };
             else return new Result() { IsSucces = false, Message = "Couldn't add a movie" };
         }
 
-        public Result UpdateMovie(UpdateMovieDTO movieUpdateDTO)
+        public async Task<Result> UpdateMovieAsync(UpdateMovieDTO movieUpdateDTO)
         {
             var movie = _mapper.Map<Movie>(movieUpdateDTO);
-            var res = _movieRepository.UpdateMovie(movie);
+            await _movieRepository.UpdateMovieAsync(movie);
+            var res = await _movieRepository.SaveChangesAsync();
             if (res) return new Result() { IsSucces = true };
             else return new Result() { IsSucces = false, Message = "Couldn't update a movie" };
         }
 
-        public Result DeleteMovie(int id)
+        public async Task<Result> DeleteMovie(int id)
         {
-            var movie = _movieRepository.GetOne(id);
+            var movie = await _movieRepository.GetOneAsync(id);
             if (movie == null) return new Result() { IsSucces = false, Message = "Couldn't find movie" };
-
-            var res = _movieRepository.DeleteMovie(movie);
+            await _movieRepository.DeleteMovie(movie);
+            var res = await _movieRepository.SaveChangesAsync();
             if (res) return new Result() { IsSucces = true };
             else return new Result() { IsSucces = false, Message = "Couldn't delete a movie" };
         }
 
 
-        public MovieResponseDTO? GetMovie(int id)
+        public async Task<MovieResponseDTO?> GetMovieAsync(int id)
         {
-            var movie = _movieRepository.GetOne(id);
+            var movie = await _movieRepository.GetOneAsync(id);
             if (movie is null) return null;
 
             return _mapper.Map<MovieResponseDTO>(movie);
         }
 
-        public Tuple<List<MovieResponseDTO>, int> GetMovies(MovieParamsDTO parameters)
+        public async Task<Tuple<List<MovieResponseDTO>, int>> GetMoviesAsync(MovieParamsDTO parameters)
         {
             
             var parametersOrg = _mapper.Map<MovieParameters>(parameters);
@@ -61,8 +63,7 @@ namespace Services
 
             if (parametersOrg.Key != null)
             {
-                
-                var moviesByKey = _movieRepository.GetPagedMovies(x =>
+                var moviesByKey = await _movieRepository.GetPagedMoviesAsync(x =>
                 EF.Functions.Like(x.Title, $"%{parametersOrg.Key}%") ||
                 EF.Functions.Like(x.Genre, $"%{parametersOrg.Key}%") ||
                 EF.Functions.Like(x.Description, $"%{parametersOrg.Key}%"), 
@@ -71,8 +72,8 @@ namespace Services
                 return new(_mapper.Map<List<MovieResponseDTO>>(moviesByKey.Item1), moviesByKey.Item2);
             }
 
-            var filter = ExpressionFilterBuilder.BuildFilter<Movie, MovieParameters>(parametersOrg);
-            var movies = _movieRepository.GetPagedMovies(filter, parametersOrg.Page, parametersOrg.PageSize, parametersOrg.Sort);
+            var filter = await ExpressionFilterBuilder.BuildFilter<Movie, MovieParameters>(parametersOrg);
+            var movies = await _movieRepository.GetPagedMoviesAsync(filter, parametersOrg.Page, parametersOrg.PageSize, parametersOrg.Sort);
             return new(_mapper.Map<List<MovieResponseDTO>>(movies.Item1), movies.Item2);
         }
     }

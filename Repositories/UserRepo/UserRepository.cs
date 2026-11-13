@@ -10,41 +10,40 @@ namespace Repositories.UserRepo
     public class UserRepository(AppDbContext context) : IUserRepository
     {
         private readonly AppDbContext _context = context;
-        public bool Delete(User user)
+        public async Task Delete(User user)
         {
             try
             {
                 _context.Users.Remove(user);
-                var res = _context.SaveChanges();
-                return res > 0;
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
             }
         }
 
-        public User FindUser(string login)
+        public Task<User?> FindUserAsync(string login)
         {
-            return _context.Users.FirstOrDefault(u => u.Email == login);
+            return _context.Users.FirstOrDefaultAsync(u => u.Email == login);
         }
 
-        public bool Register(User user)
+        public async Task RegisterAsync(User user)
         {
             try
             {
-                _context.Users.Add(user);
-                var res = _context.SaveChanges();
-                return res > 0;
+                await _context.Users.AddAsync(user);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
             }
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            var changes = await _context.SaveChangesAsync();
+            return changes > 0 ? true : false;
         }
     }
 }

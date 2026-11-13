@@ -20,14 +20,14 @@ namespace MoviesWeb.Server.Controllers
         IMapper _mapper) : ControllerBase
     {
         [HttpPost("signup")]
-        public IActionResult SignUp([FromBody] UserRegisterContract registerContract)
+        public async Task<IActionResult> SignUp([FromBody] UserRegisterContract registerContract)
         {
             Console.WriteLine("Reached");
             var valid = _registerValidator.Validate(registerContract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
 
             var userDto = _mapper.Map<UserRegisterDTO>(registerContract);
-            var res = _userService.RegisterUser(userDto);
+            var res = await _userService.RegisterUserAsync(userDto);
             if (res.IsSucces) return Ok();
             else return StatusCode(500, res.Message);
 
@@ -39,7 +39,7 @@ namespace MoviesWeb.Server.Controllers
             if (!valid.IsValid) return BadRequest(valid.Errors);
 
             var userDto = _mapper.Map<UserLoginDTO>(loginContract);
-            var principal = _userService.LoginUser(userDto);
+            var principal = await _userService.LoginUser(userDto);
             if (principal is null)
             {
                 return Unauthorized(new { message = "Incorrect pass or login" });
@@ -58,7 +58,7 @@ namespace MoviesWeb.Server.Controllers
 
         [HttpGet("me")]
         [Authorize]
-        public IActionResult GetMe()
+        public async Task<IActionResult> GetMe()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var username = User.Identity?.Name;
@@ -70,9 +70,9 @@ namespace MoviesWeb.Server.Controllers
 
 
         [HttpDelete("delete")]
-        public IActionResult Delete([FromQuery] string email)
+        public async Task<IActionResult> Delete([FromQuery] string email)
         {
-            var result = _userService.DeleteUser(email);
+            var result = await _userService.DeleteUser(email);
             if (result.IsSucces) return Ok();
             else return StatusCode(500, result.Message);
         }

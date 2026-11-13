@@ -144,8 +144,8 @@ export class MovieService {
     return true;
   }
 
-  createMovie(movie: MovieAdd): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/newMovie`, movie, { withCredentials: true });
+  createMovie(movie: MovieAdd): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/newMovie`, movie, { withCredentials: true });
   }
   updateMovie(movie: MovieUpdate, id:number): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/update/${id}`, movie, { withCredentials: true });

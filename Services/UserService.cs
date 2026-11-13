@@ -15,22 +15,22 @@ namespace Services
     {
         private readonly IUserRepository _userRepository = userRepository;
 
-        public Result RegisterUser(UserRegisterDTO userRegisterDTO)
+        public async Task<Result> RegisterUserAsync(UserRegisterDTO userRegisterDTO)
         {
-            if (_userRepository.FindUser(userRegisterDTO.Email) != null)
+            if (await _userRepository.FindUserAsync(userRegisterDTO.Email) != null)
                 return new Result() { IsSucces = false, Message = "User already exists. Please, sign in" };
 
             var user = _mapper.Map<User>(userRegisterDTO);
             user.Created = DateTime.Now;
-           
-            var result = _userRepository.Register(user);
+            await _userRepository.RegisterAsync(user);
+            var result = await _userRepository.SaveChangesAsync();
             if (result) return new Result() { IsSucces = true, Message = "Registered! Please sign in" };
             else return new Result() { IsSucces = false, Message = "Could't register user" };
         }
 
-        public ClaimsPrincipal LoginUser(UserLoginDTO userLoginDTO)
+        public async Task<ClaimsPrincipal?> LoginUser(UserLoginDTO userLoginDTO)
         {
-            var user = _userRepository.FindUser(userLoginDTO.Email);
+            var user = await _userRepository.FindUserAsync(userLoginDTO.Email);
             if (user == null) return null;
 
             if (user.Password.Equals(userLoginDTO.Password))
@@ -48,19 +48,19 @@ namespace Services
             else return null;
         }
 
-        public Result DeleteUser(string email)
+        public async  Task<Result> DeleteUser(string email)
         {
-            var user = _userRepository.FindUser(email);
+            var user = await _userRepository.FindUserAsync(email);
             if (user == null) return new Result() { IsSucces = false, Message = "Couldn't find user" };
-
-            var res = _userRepository.Delete(user);
+            await _userRepository.Delete(user);
+            var res = await _userRepository.SaveChangesAsync();
             if (res) return new Result() { IsSucces = true };
             else return new Result() {IsSucces = false, Message="Could't delete user" };
         }
 
-        public UserResponseDTO GetUser(string email)
+        public async Task<UserResponseDTO?> GetUser(string email)
         {
-            var user = _userRepository.FindUser(email);
+            var user = await _userRepository.FindUserAsync(email);
             if (user == null) return null;
 
             return _mapper.Map<UserResponseDTO>(user);

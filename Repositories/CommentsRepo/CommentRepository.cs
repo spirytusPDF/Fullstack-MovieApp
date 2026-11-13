@@ -10,51 +10,53 @@ namespace Repositories.CommentsRepo
     public class CommentRepository(AppDbContext context) : ICommentsRepository
     {
         private readonly AppDbContext _context = context;
-        public bool AddComment(MovieComment comment)
+        public async Task AddCommentAsync(MovieComment comment)
         {
             try
             {
-                _context.Comments.Add(comment);
-                var res = _context.SaveChanges();
-                return res > 0;
+                 await _context.Comments.AddAsync(comment);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                
             }
         }
 
-        public bool DeleteComment(MovieComment comment)
+        public async Task DeleteComment(MovieComment comment)
         {
             try
             {
                 _context.Comments.Remove(comment);
-                var res = _context.SaveChanges();
-                return res > 0;
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                
             }
         }
 
-        public List<MovieComment> GetByMovie(int movieId)
+        public async Task<List<MovieComment>> GetByMovieAsync(int movieId)
         {
-           return _context.Comments.AsNoTracking().Include(c=>c.user).Where(m=>m.MovieId == movieId).ToList();
+           return await _context.Comments.AsNoTracking().Include(c=>c.user).Where(m=>m.MovieId == movieId).ToListAsync();
         }
 
-        public List<MovieComment> GetByUser(int userId)
+        public async Task<List<MovieComment>> GetByUserAsync(int userId)
         {
-            return _context.Comments.AsNoTracking().Include(c => c.movie).Where(m => m.UserId == userId).ToList();
+            return await _context.Comments.AsNoTracking().Include(c => c.movie).Where(m => m.UserId == userId).ToListAsync();
         }
 
-        public MovieComment GetOne(int id)
+        public Task<MovieComment?> GetOneAsync(int id)
         {
-            return _context.Comments.FirstOrDefault(c => c.Id == id);
+            return _context.Comments.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            var changes = await _context.SaveChangesAsync();
+            return changes > 0 ? true : false;
         }
     }
 }

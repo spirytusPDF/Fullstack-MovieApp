@@ -11,7 +11,7 @@ namespace Services.Helpers
 {
     public static class ExpressionFilterBuilder
     {
-        public static Expression<Func<Movie, bool>> BuildFilter<Movie, MovieParameters>(MovieParameters parameters)
+        public static async Task<Expression<Func<Movie, bool>>> BuildFilter<Movie, MovieParameters>(MovieParameters parameters)
         {
             var entityProps = typeof(Movie)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
