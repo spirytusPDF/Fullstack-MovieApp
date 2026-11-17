@@ -16,6 +16,7 @@ namespace Domain
         public string? MovieUrl {  get; set; }
 
         public List<MovieComment>? MovieComments { get; set; }
+        public List<MovieSession>? Sessions { get; set; }
 
     }
 }

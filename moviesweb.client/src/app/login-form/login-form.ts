@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../services/auth-service';
+import { AuthService, getAuthErrorMessage } from '../services/auth-service';
 
 @Component({
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -12,36 +12,28 @@ import { AuthService } from '../services/auth-service';
   templateUrl: './login-form.html',
 })
 export class LoginForm {
-  private fb = inject(FormBuilder);
+  private fb = inject(FormBuilder).nonNullable;
   private authService = inject(AuthService);
   private router = inject(Router);
 
   errorMessage: string | null = null;
 
   loginForm = this.fb.group({
-    login: ['', Validators.required],
-    password: ['', Validators.required],
-     email: ['', Validators.required]
+    Email: ['', [Validators.required, Validators.email]],
+    Password: ['', Validators.required]
   });
 
   onSubmit() {
-    console.log("Entered onsubmit");
-    
     if (this.loginForm.invalid) return;
 
     this.errorMessage = null;
-    this.authService.login(this.loginForm.value as any).subscribe({
+    this.authService.login(this.loginForm.getRawValue()).subscribe({
       next: () => {
-        console.log('Login succeeded; navigating to /all');
-        this.router.navigate(['/all']).then(
-        (navigated) => console.log('Navigation completed:', navigated),
-        (error) => console.error('Navigation failed:', error)
-        );
+        this.router.navigate(['/all']);
       },
-      error: (err) => {
-    console.error('Login request error:', err);
-    this.errorMessage = err.error?.message || 'Invalid login or password.';
-    }
+      error: (error) => {
+        this.errorMessage = getAuthErrorMessage(error, 'Invalid email or password.');
+      }
     });
   }
 }

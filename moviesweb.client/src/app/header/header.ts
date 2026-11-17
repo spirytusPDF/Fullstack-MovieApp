@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth-service';
 import { Router, RouterLink } from '@angular/router';
@@ -19,6 +19,7 @@ export class Header {
   private authService = inject(AuthService);
   private movieService = inject(MovieService);
   user = this.authService.currentUser;
+  isAdmin = computed(() => this.user()?.roles.includes('Admin') ?? false);
   searchQuery = '';
   searchField: MovieSearchField = 'Key';
   selectedGenre = '';
@@ -80,8 +81,11 @@ export class Header {
   }
   onLogout() {
     this.authService.logout().subscribe({
-      next: () => this.router.navigate(['/login']),
-      error: (error: unknown) => console.error('Could not log out:', error)
+      next: () => this.router.navigate(['/register']),
+      error: (error: unknown) => {
+        console.error('Could not log out:', error);
+        this.router.navigate(['/register']);
+      }
     });
   }
 }

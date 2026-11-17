@@ -2,29 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
+import { MovieAdd, MovieCatalogQuery, MoviePage, MoviePagination, MovieResponse, MovieUpdate } from '../../DTOs/movie.model';
 
 export type MovieSortOrder = 'none' | 'latest' | 'older' | 'rating';
 
-export interface MovieCatalogQuery {
-  filters: Partial<MovieFilterParams>;
-  sort: MovieSortOrder;
-  page: number;
-  pageSize: number;
-}
 
-export interface MoviePagination {
-  totalCount: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-}
-
-export interface MoviePage {
-  movies: MovieResponse[];
-  pagination: MoviePagination;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -61,7 +43,6 @@ export class MovieService {
       .set('Sort', sort);
     return this.http.get<MovieResponse[]>(`${this.apiUrl}/view`, {
       params,
-      withCredentials: true,
       observe: 'response'
     }).pipe(
       map((response) => this.readMoviePage(response))
@@ -145,12 +126,16 @@ export class MovieService {
   }
 
   createMovie(movie: MovieAdd): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/newMovie`, movie, { withCredentials: true });
+    return this.http.post<void>(`${this.apiUrl}/newMovie`, movie);
   }
   updateMovie(movie: MovieUpdate, id:number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/update/${id}`, movie, { withCredentials: true });
+    return this.http.post<void>(`${this.apiUrl}/update/${id}`, movie);
   }
   deleteMovie(id:number): Observable<void>{
-    return this.http.post<void>(`${this.apiUrl}/delete/${id}`, {}, { withCredentials: true });
+    return this.http.post<void>(`${this.apiUrl}/delete/${id}`, {});
   }
 }
+
+
+
+

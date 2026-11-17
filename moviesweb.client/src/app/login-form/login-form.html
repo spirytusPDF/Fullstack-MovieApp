@@ -4,29 +4,19 @@
     <p class="authSubtitle">Enter your details to sign in</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="loginForm">
-      
       <div class="formGroup">
-        <label for="login">Login</label>
-        <input 
-          id="login" 
-          type="text" 
-          formControlName="login" 
-          placeholder="Enter your login ..." 
-        />
-        @if (loginForm.get('login')?.touched && loginForm.get('login')?.hasError('required')) {
-          <small class="errorText">Login is required</small>
-        }
-      </div>
-<div class="formGroup">
-        <label for="login">Email</label>
-        <input 
+        <label for="email">Email</label>
+        <input
           id="email" 
-          type="text" 
-          formControlName="email" 
-          placeholder="Enter your  email..." 
+          type="email"
+          formControlName="Email"
+          placeholder="Enter your email..."
         />
-        @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+        @if (loginForm.get('Email')?.touched && loginForm.get('Email')?.hasError('required')) {
           <small class="errorText">Email is required</small>
+        }
+        @if (loginForm.get('Email')?.touched && loginForm.get('Email')?.hasError('email')) {
+          <small class="errorText">Enter a valid email</small>
         }
       </div>
       
@@ -35,10 +25,10 @@
         <input 
           id="password" 
           type="password" 
-          formControlName="password" 
+          formControlName="Password"
           placeholder="••••••••" 
         />
-        @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+        @if (loginForm.get('Password')?.touched && loginForm.get('Password')?.hasError('required')) {
           <small class="errorText">Password is required</small>
         }
       </div>

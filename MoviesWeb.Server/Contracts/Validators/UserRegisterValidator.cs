@@ -19,7 +19,7 @@ namespace MoviesWeb.Server.Contracts.Validators
             RuleFor(u => u.ConfirmPassword).NotEmpty()
                .Equal(x=>x.Password);
 
-            RuleFor(u => u.Name).NotEmpty()
+            RuleFor(u => u.UserName).NotEmpty()
                .MinimumLength(2).MaximumLength(30);
             RuleFor(u => u.Surname).NotEmpty()
                .MinimumLength(2).MaximumLength(30);

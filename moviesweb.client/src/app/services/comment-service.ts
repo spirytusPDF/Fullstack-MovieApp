@@ -11,15 +11,15 @@ export class CommentService {
 
   constructor(private http: HttpClient) {}
 
-  addComment(comment: CommentAdd, movieId: number, userId: number): Observable<void> {
+  addComment(comment: CommentAdd, movieId: number, userId: string): Observable<void> {
     const params = new HttpParams()
       .set('movieId', movieId)
       .set('userId', userId);
 
-    return this.http.post<void>(this.apiUrl, comment, { params, withCredentials: true });
+    return this.http.post<void>(this.apiUrl, comment, { params });
   }
 
   deleteComment(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

@@ -45,7 +45,7 @@ namespace Repositories.CommentsRepo
 
         public async Task<List<MovieComment>> GetByUserAsync(int userId)
         {
-            return await _context.Comments.AsNoTracking().Include(c => c.movie).Where(m => m.UserId == userId).ToListAsync();
+            return await _context.Comments.AsNoTracking().Include(c => c.movie).Where(m => Convert.ToInt64(m.UserId) == userId).ToListAsync();
         }
 
         public Task<MovieComment?> GetOneAsync(int id)

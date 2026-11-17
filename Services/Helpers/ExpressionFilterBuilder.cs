@@ -11,14 +11,14 @@ namespace Services.Helpers
 {
     public static class ExpressionFilterBuilder
     {
-        public static async Task<Expression<Func<Movie, bool>>> BuildFilter<Movie, MovieParameters>(MovieParameters parameters)
+        public static async Task<Expression<Func<TEntity, bool>>> BuildFilter<TEntity, TParams>(TParams parameters)
         {
-            var entityProps = typeof(Movie)
+            var entityProps = typeof(TEntity)
                 .GetProperties(BindingFlags.Instance | BindingFlags.Public)
                 .ToDictionary(p=>p.Name, StringComparer.OrdinalIgnoreCase);
-            var paramProps = typeof(MovieParameters).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var paramProps = typeof(TParams).GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
-            var entityNode = Expression.Parameter(typeof(Movie), "x");
+            var entityNode = Expression.Parameter(typeof(TEntity), "x");
 
             Expression? result = null;
 
@@ -28,13 +28,27 @@ namespace Services.Helpers
                 if (value == null) continue;
                 if (value is string strvalue && string.IsNullOrEmpty(strvalue)) continue;
 
-                if (!entityProps.TryGetValue(pProp.Name, out var entityPropMatch)) continue;
+                Expression propertyAcess;
+                if (entityProps.TryGetValue(pProp.Name, out var entityPropMatch))
+                {
+                    propertyAcess = Expression.Property(entityNode, entityPropMatch);
+                }
+                else if (typeof(TEntity) == typeof(MovieSession)
+                    && string.Equals(pProp.Name, "MovieTitle", StringComparison.OrdinalIgnoreCase))
+                {
+                    var movieProperty = typeof(MovieSession).GetProperty(nameof(MovieSession.Movie))!;
+                    var titleProperty = typeof(Movie).GetProperty(nameof(Movie.Title))!;
+                    propertyAcess = Expression.Property(Expression.Property(entityNode, movieProperty), titleProperty);
+                }
+                else
+                {
+                    continue;
+                }
 
-                var propertyAcess = Expression.Property(entityNode, entityPropMatch);
                 //x.Property
                 Expression comparison;
 
-                if(entityPropMatch.PropertyType == typeof(string))
+                if(propertyAcess.Type == typeof(string))
                 {
                     var efLikeMethod = typeof(DbFunctionsExtensions)
                         .GetMethod(nameof(DbFunctionsExtensions.Like), new[] { typeof(DbFunctions), typeof(string), typeof(string) })!;
@@ -50,9 +64,9 @@ namespace Services.Helpers
                 }
                 else
                 {
-                    var targetType = Nullable.GetUnderlyingType(entityPropMatch.PropertyType) ?? entityPropMatch.PropertyType;
+                    var targetType = Nullable.GetUnderlyingType(propertyAcess.Type) ?? propertyAcess.Type;
                     var convertedValue = Convert.ChangeType(value, targetType);
-                    var valueConstant = Expression.Constant(convertedValue, entityPropMatch.PropertyType);
+                    var valueConstant = Expression.Constant(convertedValue, propertyAcess.Type);
 
                     comparison = Expression.Equal(propertyAcess, valueConstant);
                 }
@@ -65,7 +79,7 @@ namespace Services.Helpers
 
              if (result == null) return x => true;
 
-             return Expression.Lambda<Func<Movie, bool>>(result, entityNode);
+             return Expression.Lambda<Func<TEntity, bool>>(result, entityNode);
         }
     
     }

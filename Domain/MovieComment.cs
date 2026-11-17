@@ -11,7 +11,7 @@ namespace Domain
         public string Text { get; set; }
         public DateTime Posted {  get; set; }
 
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public User user { get; set; }
 
         public int MovieId { get; set; }

@@ -15,14 +15,18 @@ namespace MoviesWeb.Server.Controllers
         IMapper _mapper) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> AddComment(AddCommentContract contract, [FromQuery] int movieId, [FromQuery] int userId)
+        public async Task<IActionResult> AddComment(AddCommentContract contract, [FromQuery] int movieId, [FromQuery] string userId)
         {
             var valid = _addValidator.Validate(contract);
             if (!valid.IsValid) return BadRequest(valid.Errors);
 
             var comment = _mapper.Map<CommentCreateDTO>(contract);
-            comment.UserId = userId;
-            comment.MovieId = movieId;
+            if (Guid.TryParse(userId, out Guid result))
+            {
+                comment.UserId = result;
+            }
+            else return BadRequest(new { res = "User id is poorly written" });
+             comment.MovieId = movieId;
             var res = await _commentService.AddCommentAsync(comment);
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();

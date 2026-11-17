@@ -58,7 +58,7 @@ namespace Repositories.MovieRepo
                                   .ThenBy(m => m.Id),
                 _ => query.OrderBy(m => m.Title).ThenBy(m => m.Id)
             };
-            query = query.Skip((page - 1) * size).Take(size);
+            query = query.Skip((page - 1) * size).Take(size).Include(m => m.MovieComments);
             return  new (await query.ToListAsync(), totalSize);
         }
 

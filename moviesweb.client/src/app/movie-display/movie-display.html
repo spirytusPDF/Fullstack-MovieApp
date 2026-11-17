@@ -24,7 +24,7 @@
         </div>
 
         <div class="movieInfo">
-          @if (isEditing()) {
+          @if (isEditing() && isAdmin()) {
             <h1 class="movieTitle">{{ currentMovie.title }}</h1>
             <form [formGroup]="editForm" (ngSubmit)="saveMovie()" class="editForm commentForm">
               <label>
@@ -71,21 +71,35 @@
             </div>
             <p class="movieDescription">{{ currentMovie.description }}</p>
             <div class="actionRow">
+              <a
+                class="btn btnSecondary"
+                [routerLink]="['/sessions']"
+                [queryParams]="{ movieId: currentMovie.id, movieTitle: currentMovie.title }">
+                Sessions
+              </a>
               @if (currentMovie.movieUrl) {
                 <a [href]="currentMovie.movieUrl" target="_blank" rel="noopener noreferrer" class="btn btnWatch">
                   Watch movie
                 </a>
               }
-              <div class="adminActions">
-                <button class="btn btnEdit" type="button" (click)="startEditing()">Change</button>
-                <button
-                  class="btn btnDelete"
-                  type="button"
-                  [disabled]="isDeletingMovie()"
-                  (click)="deleteMovie()">
-                  {{ isDeletingMovie() ? 'Deleting...' : 'Delete movie' }}
-                </button>
-              </div>
+              @if (isAdmin()) {
+                <div class="adminActions">
+                  <a
+                    class="btn btnEdit"
+                    [routerLink]="['/newSession', currentMovie.id]"
+                    [queryParams]="{ movieTitle: currentMovie.title }">
+                    Add session
+                  </a>
+                  <button class="btn btnEdit" type="button" (click)="startEditing()">Change</button>
+                  <button
+                    class="btn btnDelete"
+                    type="button"
+                    [disabled]="isDeletingMovie()"
+                    (click)="deleteMovie()">
+                    {{ isDeletingMovie() ? 'Deleting...' : 'Delete movie' }}
+                  </button>
+                </div>
+              }
             </div>
           }
         </div>

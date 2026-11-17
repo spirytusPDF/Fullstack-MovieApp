@@ -20,14 +20,14 @@
 
       <div class="formRow">
         <div class="formGroup">
-          <label for="name">Name</label>
+          <label for="userName">Name</label>
           <input 
-            id="name" 
+            id="userName"
             type="text" 
-            formControlName="Name" 
+            formControlName="UserName"
             placeholder="Your name" 
           />
-          @if (registerForm.get('Name')?.touched && registerForm.get('Name')?.hasError('required')) {
+          @if (registerForm.get('UserName')?.touched && registerForm.get('UserName')?.hasError('required')) {
             <small class="errorText">Name is required</small>
           }
         </div>
@@ -68,8 +68,8 @@
             formControlName="Age" 
             placeholder="18" 
           />
-          @if (registerForm.get('Age')?.touched && registerForm.get('Age')?.hasError('min')) {
-            <small class="errorText">Must be 10+</small>
+          @if (registerForm.get('Age')?.touched && (registerForm.get('Age')?.hasError('min') || registerForm.get('Age')?.hasError('max'))) {
+            <small class="errorText">Must be between 16 and 120</small>
           }
         </div>
       </div>

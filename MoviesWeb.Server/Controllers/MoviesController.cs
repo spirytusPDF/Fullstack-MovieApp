@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -49,6 +50,7 @@ namespace MoviesWeb.Server.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("newMovie")]
         public async Task<IActionResult> AddMovie([FromBody]AddMovieContract contract)
         {
@@ -59,6 +61,8 @@ namespace MoviesWeb.Server.Controllers
             if (!res.IsSucces) return StatusCode(500,res.Message);
             else return Ok();
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost("update/{id:int:min(1)}")]
         public async Task<IActionResult> Update([FromBody] UpdateMovieContract contract, [FromRoute] int id)
         {
@@ -70,6 +74,8 @@ namespace MoviesWeb.Server.Controllers
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost("delete/{id:int:min(1)}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {

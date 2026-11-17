@@ -6,8 +6,6 @@ namespace MoviesWeb.Server.Contracts.Validators
     {
         public UserLoginValidator() 
         {
-            RuleFor(u => u.Login).NotEmpty()
-                .MinimumLength(2).MaximumLength(30);
 
             RuleFor(u => u.Password).NotEmpty()
                 .MinimumLength(6).MaximumLength(30)

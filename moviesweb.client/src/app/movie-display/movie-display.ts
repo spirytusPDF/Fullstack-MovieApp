@@ -1,12 +1,13 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MovieResponse, MovieUpdate } from '../../DTOs/movie.model';
 import { MovieService } from '../services/movie-service';
 import { CommentService } from '../services/comment-service';
 import { AuthService } from '../services/auth-service';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   selector: 'app-movie-display',
   styleUrl: './movie-display.css',
   templateUrl: './movie-display.html',
@@ -18,6 +19,7 @@ export class MovieDisplay implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  isAdmin = computed(() => this.authService.currentUser()?.roles.includes('Admin') ?? false);
   isLoading = signal<boolean>(true);
   errorMessage: string | null = null;
   isEditing = signal(false);
@@ -164,11 +166,7 @@ export class MovieDisplay implements OnInit {
       return;
     }
 
-    const userId = Number(user.id);
-    if (!Number.isSafeInteger(userId) || userId < 1) {
-      this.commentError.set('Your user session is invalid. Sign in again.');
-      return;
-    }
+    
 
     const value = this.commentForm.getRawValue();
     const title = value.title.trim();
@@ -183,7 +181,7 @@ export class MovieDisplay implements OnInit {
     this.commentService.addComment(
       { title, text },
       movie.id,
-      userId
+      user.id
     ).subscribe({
       next: () => {
         this.commentForm.reset();

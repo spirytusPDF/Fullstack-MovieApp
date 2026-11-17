@@ -1,0 +1,146 @@
+<main class="sessionsPage">
+  <header class="sessionsHeader">
+    <div>
+      <p class="sessionsEyebrow">Now showing</p>
+      <h1 class="sessionsTitle">Movie sessions</h1>
+    </div>
+    @if (movieId(); as id) {
+      <a class="btn btnSecondary" [routerLink]="['/', id]">Back to movie</a>
+    } @else {
+      <a class="btn btnSecondary" routerLink="/all">Back to movies</a>
+    }
+  </header>
+
+  <form class="filterPanel" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+    <label>
+      Movie title
+      <input class="filterInput" type="search" formControlName="movieTitle" placeholder="Any movie" />
+    </label>
+    <label>
+      Hall
+      <input class="filterInput" type="search" formControlName="hallName" placeholder="Any hall" />
+    </label>
+    <label>
+      Ticket price (exact)
+      <input class="filterInput" type="number" min="0" step="0.01" formControlName="ticketPrice" />
+    </label>
+    <label>
+      Available seats (exact)
+      <input class="filterInput" type="number" min="0" step="1" formControlName="availableSeats" />
+    </label>
+    <label>
+      Sort by
+      <select class="filterInput" formControlName="sort">
+        <option value="soon">Earliest start time</option>
+        <option value="rating">Movie rating</option>
+      </select>
+    </label>
+    <div class="filterActions">
+      <button class="btn btnPrimary" type="submit" [disabled]="filterForm.invalid">Apply filters</button>
+      <button class="btn btnSecondary" type="button" (click)="clearFilters()">Clear</button>
+    </div>
+  </form>
+
+  @if (deleteError()) {
+    <div class="statusCard errorCard" role="alert">
+      <p class="errorMessage">{{ deleteError() }}</p>
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="statusCard">
+      <div class="loader"></div>
+      <p>Loading sessions...</p>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="statusCard">
+      <p class="errorMessage">{{ errorMessage() }}</p>
+      <button class="btn btnSecondary" type="button" (click)="loadSessions()">Try again</button>
+    </div>
+  } @else if (editingSession(); as session) {
+    <form class="sessionDetail sessionEditForm" [formGroup]="editForm" (ngSubmit)="saveSessionChanges()">
+      <h2 class="sessionDetailTitle">Change session · {{ session.movie.title }}</h2>
+      <label>
+        Starts at
+        <input class="filterInput" type="datetime-local" formControlName="startsAt" />
+      </label>
+      @if (editForm.controls.startsAt.touched && editForm.controls.startsAt.errors?.['dateRange']) {
+        <p class="errorMessage">The session must be in the future and within one year.</p>
+      }
+      <label>
+        Hall
+        <input class="filterInput" type="text" maxlength="400" formControlName="hallName" />
+      </label>
+      <label>
+        Ticket price
+        <input class="filterInput" type="number" min="0.01" step="0.01" formControlName="ticketPrice" />
+      </label>
+      @if (updateError()) {
+        <p class="errorMessage">{{ updateError() }}</p>
+      }
+      <div class="filterActions">
+        <button class="btn btnSecondary" type="button" (click)="cancelEditing()" [disabled]="isUpdating()">Cancel</button>
+        <button class="btn btnPrimary" type="submit" [disabled]="isUpdating() || editForm.invalid">
+          {{ isUpdating() ? 'Saving...' : 'Save changes' }}
+        </button>
+      </div>
+    </form>
+  } @else if (selectedSession(); as session) {
+    <article class="sessionDetail">
+      <h2 class="sessionDetailTitle">{{ session.movie.title }}</h2>
+      <p><strong>Starts:</strong> {{ session.startsAt | date:'EEE, MMM d, y, h:mm a' }}</p>
+      <p><strong>Hall:</strong> {{ session.hallName }}</p>
+      <p><strong>Ticket price:</strong> {{ session.ticketPrice | number:'1.2-2' }}</p>
+      <p><strong>Available seats:</strong> {{ session.availableSeats }}</p>
+      <button class="btn btnSecondary" type="button" (click)="selectedSession.set(null)">Back to sessions</button>
+    </article>
+  } @else if (sessions().length > 0) {
+    <div class="sessionsSummary">{{ totalCount() }} sessions found</div>
+    <div class="sessionList">
+      @for (session of sessions(); track session.id) {
+        <article class="sessionCard">
+          <button class="sessionCardMain" type="button" (click)="selectSession(session)">
+            <span class="sessionDate">{{ session.startsAt | date:'EEE, MMM d, y, h:mm a' }}</span>
+            <span class="sessionMovie">{{ session.movie.title }}</span>
+            <span class="sessionHall">{{ session.hallName }}</span>
+            <span class="sessionSummary">
+              {{ session.ticketPrice | number:'1.2-2' }} · {{ session.availableSeats }} seats available
+            </span>
+          </button>
+          @if (isAdmin()) {
+            <div class="sessionAdminActions">
+              <button class="btn btnEdit" type="button" (click)="startEditing(session)">Change</button>
+              <button
+                class="btn btnDelete"
+                type="button"
+                [disabled]="deletingSessionId() !== null"
+                (click)="deleteSession(session)">
+                {{ deletingSessionId() === session.id ? 'Deleting...' : 'Delete' }}
+              </button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+    @if (totalPages() > 1) {
+      <nav class="pagination" aria-label="Session pages">
+        <button type="button" (click)="goToPage(currentPage() - 1)" [disabled]="!hasPrevious()">Previous</button>
+        @for (page of pageNumbers(); track page) {
+          <button
+            type="button"
+            class="page-number"
+            [class.current-page]="page === currentPage()"
+            [attr.aria-current]="page === currentPage() ? 'page' : null"
+            (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+        <button type="button" (click)="goToPage(currentPage() + 1)" [disabled]="!hasNext()">Next</button>
+      </nav>
+    }
+  } @else {
+    <div class="statusCard">
+      <p>No sessions match these filters.</p>
+    </div>
+  }
+</main>

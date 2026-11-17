@@ -1,4 +1,6 @@
-interface MovieAdd{
+import { MovieSortOrder } from "../app/services/movie-service";
+
+export interface MovieAdd{
     title:string,
     description:string,
     genre:string,
@@ -7,7 +9,7 @@ interface MovieAdd{
     posterUrl:string | null,
     movieUrl:string | null
 }
-interface MovieUpdate{
+export interface MovieUpdate{
     description:string,
     genre:string,
     releaseYear:number,
@@ -16,7 +18,7 @@ interface MovieUpdate{
     movieUrl:string | null
 }
 
-interface MovieResponse{
+export interface MovieResponse{
      id:number,
     title:string,
     description:string,
@@ -26,4 +28,25 @@ interface MovieResponse{
     posterUrl:string | null,
     movieUrl:string | null,
     movieComments:CommentResponse[]
+}
+
+export interface MovieCatalogQuery {
+  filters: Partial<MovieFilterParams>;
+  sort: MovieSortOrder;
+  page: number;
+  pageSize: number;
+}
+
+export interface MoviePagination {
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}
+
+export interface MoviePage {
+  movies: MovieResponse[];
+  pagination: MoviePagination;
 }

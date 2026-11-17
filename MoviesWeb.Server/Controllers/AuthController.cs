@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Domain;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MoviesWeb.Server.Contracts;
 using Services;
@@ -14,67 +16,62 @@ namespace MoviesWeb.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(UserService _userService,
-        IValidator<UserRegisterContract> _registerValidator,
+    public class AuthController(IValidator<UserRegisterContract> _registerValidator,
         IValidator<UserLoginContract> _loginValidator,
-        IMapper _mapper) : ControllerBase
+        IMapper _mapper,IdentityAuthService _authService) : ControllerBase
+        
     {
+
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromBody] UserRegisterContract registerContract)
+
+        public async Task<IActionResult> Register([FromBody] UserRegisterContract registerContract)
         {
-            Console.WriteLine("Reached");
-            var valid = _registerValidator.Validate(registerContract);
-            if (!valid.IsValid) return BadRequest(valid.Errors);
+            var validationresult = _registerValidator.Validate(registerContract);
+            if (!validationresult.IsValid) return BadRequest(new { errors = validationresult.Errors });
 
-            var userDto = _mapper.Map<UserRegisterDTO>(registerContract);
-            var res = await _userService.RegisterUserAsync(userDto);
-            if (res.IsSucces) return Ok();
-            else return StatusCode(500, res.Message);
-
+            var user = _mapper.Map<UserRegisterDTO>(registerContract);
+            var result = await _authService.RegisterUserAsync(user, registerContract.Password);
+            if (!result.Succes)
+                return BadRequest(new { errors = result.Errors });
+            return Ok(new { token = result.Token });
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> SignIn(UserLoginContract loginContract)
         {
-            var valid = _loginValidator.Validate(loginContract);
-            if (!valid.IsValid) return BadRequest(valid.Errors);
+            var validationresult = _loginValidator.Validate(loginContract);
+            if (!validationresult.IsValid) return BadRequest(new { errors = validationresult.Errors });
+            var user = _mapper.Map<UserLoginDTO>(loginContract);
 
-            var userDto = _mapper.Map<UserLoginDTO>(loginContract);
-            var principal = await _userService.LoginUser(userDto);
-            if (principal is null)
-            {
-                return Unauthorized(new { message = "Incorrect pass or login" });
-            }
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            return Ok(new { message = "Signed in" });
+            var result = await _authService.LoginUserAsync(user);
+            if (!result.Succes)
+                return Unauthorized(new { errors = result.Errors });
 
+            return Ok(new { token = result.Token });
         }
         [HttpPost("logout")]
-        public async Task<IActionResult> LogOut()
+        public async Task<IActionResult> LogOut([FromBody] string id)
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok(new { message = "Logout" });
-
+            await _authService.LogoutAsync(id);
+            return Ok();
         }
 
-        [HttpGet("me")]
         [Authorize]
-        public async Task<IActionResult> GetMe()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var username = User.Identity?.Name;
-            var email = User.FindFirstValue(ClaimTypes.Email);
-
-            return Ok(new { id = userId, username, email });
-        }
-
-
-
         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete([FromQuery] string email)
+        public async Task<IActionResult> DeleteAccount([FromBody] UserLoginContract dto)
         {
-            var result = await _userService.DeleteUser(email);
-            if (result.IsSucces) return Ok();
-            else return StatusCode(500, result.Message);
+            var validationresult = _loginValidator.Validate(dto);
+            if (!validationresult.IsValid) return BadRequest(new { errors = validationresult.Errors });
+            var user = _mapper.Map<UserLoginDTO>(dto);
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(userEmail))
+                return Unauthorized();
+
+            var result = await _authService.DeleteAccountAsync(dto.Email, dto.Password);
+            if (!result.Succes)
+                return BadRequest(new { errors = result.Errors });
+
+            return NoContent();
         }
     }
 }

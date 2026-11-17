@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MovieResponse } from '../../DTOs/movie.model';
 
 @Component({
   imports: [RouterLink, CommonModule],

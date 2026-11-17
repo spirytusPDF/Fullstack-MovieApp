@@ -82,10 +82,7 @@
           }
         },
         "test": {
-          "builder": "@angular/build:unit-test",
-          "options": {
-            "karmaConfig": "karma.conf.js"
-          }
+          "builder": "@angular/build:unit-test"
         }
       }
     }

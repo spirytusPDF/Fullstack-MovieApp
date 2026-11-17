@@ -1,8 +1,9 @@
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { MovieCard } from '../movie-card/movie-card';
-import { MoviePage, MovieService } from '../services/movie-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, debounceTime, switchMap, tap } from 'rxjs';
+import { MoviePage, MovieResponse } from '../../DTOs/movie.model';
+import { MovieService } from '../services/movie-service';
 
 @Component({
   imports: [MovieCard],

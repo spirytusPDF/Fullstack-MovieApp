@@ -18,12 +18,6 @@ export class App implements OnInit {
   protected readonly title = signal('moviesweb.client');
 
   ngOnInit(): void {
-    this.authService.checkAuth().subscribe({
-      error: (error: { status?: number }) => {
-        if (error.status !== 401) {
-          console.error('Could not restore the signed-in user:', error);
-        }
-      }
-    });
+    this.authService.checkAuth().subscribe();
   }
 }

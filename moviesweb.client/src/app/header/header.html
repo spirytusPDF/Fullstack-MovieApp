@@ -37,8 +37,11 @@
 
     <nav class="user-nav">
       @if (user()) {
-        <button (click)="openAddMovieModal()">Add a movie</button>
-        <span class="user-name">👤 {{ user()?.username }}</span>
+        <a class="header-button" routerLink="/sessions">Sessions</a>
+        @if (isAdmin()) {
+          <button (click)="openAddMovieModal()">Add a movie</button>
+        }
+        <span class="user-name">👤 {{ user()?.login }}</span>
         <button (click)="onLogout()">Logout</button>
       } @else {
         <a class="header-button" routerLink="/register">Register</a>
