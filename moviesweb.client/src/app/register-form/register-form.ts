@@ -21,8 +21,10 @@ export class RegisterForm {
     Login: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
     UserName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
     Surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
-    Email: ['', [Validators.required, Validators.email, Validators.maxLength(40)]],
+    Email: ['', [Validators.required, Validators.email, Validators.minLength(2), Validators.maxLength(40)]],
     Age: [18, [Validators.required, Validators.min(16), Validators.max(120)]],
+    City: ['', [Validators.minLength(2), Validators.maxLength(40)]],
+    FavouriteGenre: ['', [Validators.minLength(2), Validators.maxLength(70)]],
     Password: ['', [
       Validators.required,
       Validators.minLength(8),
@@ -35,18 +37,31 @@ export class RegisterForm {
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
     const password = control.get('Password')?.value;
     const confirmPassword = control.get('ConfirmPassword')?.value;
-    return password === confirmPassword ? null : { passwordsMismatch: true };
+    return !confirmPassword || password === confirmPassword ? null : { passwordsMismatch: true };
   }
+
+  clearMessages(): void {
+    this.errorMessage = null;
+  }
+
   onSubmit() {
-    if (this.registerForm.invalid) return;
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
     this.errorMessage = null;
-    this.authService.signUp(this.registerForm.getRawValue()).subscribe({
+    const formValue = this.registerForm.getRawValue();
+    this.authService.signUp({
+      ...formValue,
+      City: formValue.City.trim() || null,
+      FavouriteGenre: formValue.FavouriteGenre.trim() || null
+    }).subscribe({
       next: () => {
         this.router.navigate(['/login']);
       },
       error: (error) => {
-        this.errorMessage = getAuthErrorMessage(error, 'Failed to register. Check your input.');
+        this.errorMessage = getAuthErrorMessage(error, 'Could not create your account. Review the fields and try again.');
       }
     });
   }

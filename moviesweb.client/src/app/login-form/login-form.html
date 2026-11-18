@@ -3,7 +3,7 @@
     <h2 class="authTitle">Welcome Back!</h2>
     <p class="authSubtitle">Enter your details to sign in</p>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="loginForm">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" (input)="clearMessages()" class="loginForm">
       <div class="formGroup">
         <label for="email">Email</label>
         <input
@@ -12,11 +12,16 @@
           formControlName="Email"
           placeholder="Enter your email..."
         />
-        @if (loginForm.get('Email')?.touched && loginForm.get('Email')?.hasError('required')) {
-          <small class="errorText">Email is required</small>
-        }
-        @if (loginForm.get('Email')?.touched && loginForm.get('Email')?.hasError('email')) {
-          <small class="errorText">Enter a valid email</small>
+        @if (loginForm.controls.Email.invalid && (loginForm.controls.Email.dirty || loginForm.controls.Email.touched)) {
+          @if (loginForm.controls.Email.hasError('required')) {
+            <small class="errorText" role="alert">Email is required.</small>
+          } @else if (loginForm.controls.Email.hasError('email')) {
+            <small class="errorText" role="alert">Enter a valid email address.</small>
+          } @else if (loginForm.controls.Email.hasError('minlength')) {
+            <small class="errorText" role="alert">Email must be at least 2 characters.</small>
+          } @else if (loginForm.controls.Email.hasError('maxlength')) {
+            <small class="errorText" role="alert">Email cannot exceed 40 characters.</small>
+          }
         }
       </div>
       
@@ -28,18 +33,26 @@
           formControlName="Password"
           placeholder="••••••••" 
         />
-        @if (loginForm.get('Password')?.touched && loginForm.get('Password')?.hasError('required')) {
-          <small class="errorText">Password is required</small>
+        @if (loginForm.controls.Password.invalid && (loginForm.controls.Password.dirty || loginForm.controls.Password.touched)) {
+          @if (loginForm.controls.Password.hasError('required')) {
+            <small class="errorText" role="alert">Password is required.</small>
+          } @else if (loginForm.controls.Password.hasError('minlength')) {
+            <small class="errorText" role="alert">Password must be at least 6 characters.</small>
+          } @else if (loginForm.controls.Password.hasError('maxlength')) {
+            <small class="errorText" role="alert">Password cannot exceed 30 characters.</small>
+          } @else if (loginForm.controls.Password.hasError('pattern')) {
+            <small class="errorText" role="alert">Password needs uppercase and lowercase letters, a number, and a symbol.</small>
+          }
         }
       </div>
 
       @if (errorMessage) {
-        <div class="serverErrorAlert">
+        <div class="serverErrorAlert" role="alert">
           {{ errorMessage }}
         </div>
       }
 
-      <button type="submit" class="submitBtn" [disabled]="loginForm.invalid">
+      <button type="submit" class="submitBtn">
         Sign In
       </button>
 

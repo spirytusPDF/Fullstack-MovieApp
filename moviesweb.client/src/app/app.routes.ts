@@ -9,6 +9,7 @@ import { SessionDisplay } from './session-display/session-display';
 import { AddMovieForm } from './add-movie-form/add-movie-form';
 import { AddSessionForm } from './add-session-form/add-session-form';
 import { AuthService } from './services/auth-service';
+import { UpdateUserForm } from './update-user-form/update-user-form';
 
 const requireAuth: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -39,6 +40,7 @@ export const routes: Routes = [
   },
   { path: 'register', component: RegisterForm },
   { path: 'login', component: LoginForm },
+  { path: 'updateUser', component: UpdateUserForm, canActivate: [requireAuth] },
   { path: 'all', component: Cathalog, canActivate: [requireAuth] },
   { path: 'newMovie', component: AddMovieForm, canActivate: [requireAdmin] },
   { path: 'newSession/:movieId', component: AddSessionForm, canActivate: [requireAdmin] },

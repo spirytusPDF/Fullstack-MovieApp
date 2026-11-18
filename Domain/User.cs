@@ -9,6 +9,8 @@ namespace Domain
     {
         public string Login {  get; set; }
         public string Surname { get; set; }
+        public string? City {  get; set; }
+        public string? FavouriteGenre {  get; set; }
         public List<MovieComment>? MovieComments { get; set; }
 
     }

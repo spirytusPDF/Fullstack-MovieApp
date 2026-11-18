@@ -10,5 +10,7 @@ namespace Services.DTOs.User
         public string Login { get; set; }
         public string UserName { get; set; }
         public string Surname { get; set; }
+        public string? City { get; set; }
+        public string? FavouriteGenre { get; set; }
     }
 }

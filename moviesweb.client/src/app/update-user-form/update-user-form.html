@@ -1,0 +1,117 @@
+<div class="account-container">
+  <div class="account-layout">
+    <section class="profile-card" aria-labelledby="profile-title">
+      <h2 id="profile-title">Account properties</h2>
+      @if (profileLoading()) {
+        <p class="account-subtitle" role="status">Loading account details...</p>
+      } @else if (profileErrorMessage()) {
+        <p class="server-error" role="alert">{{ profileErrorMessage() }}</p>
+        <button type="button" class="retry-button" (click)="loadProfile()">Retry</button>
+      } @else if (profile()) {
+        <dl class="profile-list">
+          <div><dt>Login</dt><dd>{{ profile()?.login || 'Not set' }}</dd></div>
+          <div><dt>Name</dt><dd>{{ profile()?.userName || 'Not set' }}</dd></div>
+          <div><dt>Surname</dt><dd>{{ profile()?.surname || 'Not set' }}</dd></div>
+          <div><dt>City</dt><dd>{{ profile()?.city || 'Not set' }}</dd></div>
+          <div><dt>Favourite genre</dt><dd>{{ profile()?.favouriteGenre || 'Not set' }}</dd></div>
+        </dl>
+      }
+    </section>
+
+    <section class="account-card">
+      <h2>Update account</h2>
+      <p class="account-subtitle">Confirm your email and current password to make account changes.</p>
+
+      <form [formGroup]="updateForm" (ngSubmit)="onSubmit()" (input)="clearMessages()">
+      <label for="email">Account email</label>
+      <input id="email" type="email" formControlName="Email" autocomplete="email">
+      @if (updateForm.controls.Email.invalid && (updateForm.controls.Email.dirty || updateForm.controls.Email.touched)) {
+        @if (updateForm.controls.Email.hasError('required')) {
+          <small class="field-error" role="alert">Enter your account email.</small>
+        } @else if (updateForm.controls.Email.hasError('email')) {
+          <small class="field-error" role="alert">Enter a valid email address.</small>
+        } @else if (updateForm.controls.Email.hasError('emailMismatch')) {
+          <small class="field-error" role="alert">Enter the email for the signed-in account ({{ user()?.email }}).</small>
+        }
+      }
+
+      <label for="currentPassword">Current password</label>
+      <input id="currentPassword" type="password" formControlName="Password" autocomplete="current-password">
+      @if (updateForm.controls.Password.invalid && (updateForm.controls.Password.dirty || updateForm.controls.Password.touched)) {
+        @if (updateForm.controls.Password.hasError('required')) {
+          <small class="field-error" role="alert">Enter your current password.</small>
+        } @else if (updateForm.controls.Password.hasError('minlength')) {
+          <small class="field-error" role="alert">Password must be at least 6 characters.</small>
+        } @else if (updateForm.controls.Password.hasError('maxlength')) {
+          <small class="field-error" role="alert">Password cannot exceed 30 characters.</small>
+        } @else if (updateForm.controls.Password.hasError('pattern')) {
+          <small class="field-error" role="alert">Password needs uppercase and lowercase letters, a number, and a symbol.</small>
+        }
+      }
+
+      <label for="newLogin">New login (optional)</label>
+      <input id="newLogin" type="text" formControlName="NewLogin" autocomplete="username">
+      @if (updateForm.controls.NewLogin.invalid && (updateForm.controls.NewLogin.dirty || updateForm.controls.NewLogin.touched)) {
+        @if (updateForm.controls.NewLogin.hasError('minlength')) {
+          <small class="field-error" role="alert">Login must be at least 2 characters.</small>
+        } @else if (updateForm.controls.NewLogin.hasError('maxlength')) {
+          <small class="field-error" role="alert">Login cannot exceed 70 characters.</small>
+        }
+      }
+
+      <label for="newCity">City (optional)</label>
+      <input id="newCity" type="text" formControlName="NewCity" autocomplete="address-level2">
+      @if (updateForm.controls.NewCity.invalid && (updateForm.controls.NewCity.dirty || updateForm.controls.NewCity.touched)) {
+        @if (updateForm.controls.NewCity.hasError('minlength')) {
+          <small class="field-error" role="alert">City must be at least 2 characters.</small>
+        } @else if (updateForm.controls.NewCity.hasError('maxlength')) {
+          <small class="field-error" role="alert">City cannot exceed 70 characters.</small>
+        }
+      }
+
+      <label for="newGenre">Favourite genre (optional)</label>
+      <input id="newGenre" type="text" formControlName="NewGenre">
+      @if (updateForm.controls.NewGenre.invalid && (updateForm.controls.NewGenre.dirty || updateForm.controls.NewGenre.touched)) {
+        @if (updateForm.controls.NewGenre.hasError('minlength')) {
+          <small class="field-error" role="alert">Genre must be at least 2 characters.</small>
+        } @else if (updateForm.controls.NewGenre.hasError('maxlength')) {
+          <small class="field-error" role="alert">Genre cannot exceed 70 characters.</small>
+        }
+      }
+
+      <label for="newPassword">New password (optional)</label>
+      <input id="newPassword" type="password" formControlName="NewPassword" autocomplete="new-password">
+      @if (updateForm.controls.NewPassword.invalid && (updateForm.controls.NewPassword.dirty || updateForm.controls.NewPassword.touched)) {
+        @if (updateForm.controls.NewPassword.hasError('minlength')) {
+          <small class="field-error" role="alert">New password must be at least 6 characters.</small>
+        } @else if (updateForm.controls.NewPassword.hasError('maxlength')) {
+          <small class="field-error" role="alert">New password cannot exceed 30 characters.</small>
+        } @else if (updateForm.controls.NewPassword.hasError('pattern')) {
+          <small class="field-error" role="alert">New password needs uppercase and lowercase letters, a number, and a symbol.</small>
+        }
+      }
+
+      @if (submitted && updateForm.hasError('noChanges')) {
+        <small class="field-error" role="alert">Enter at least one profile change.</small>
+      }
+      @if (errorMessage) {
+        <p class="server-error" role="alert">{{ errorMessage }}</p>
+      }
+      @if (successMessage) {
+        <p class="success-message" role="status">{{ successMessage }}</p>
+      }
+
+      <div class="account-actions">
+        <button type="submit">Save changes</button>
+        <a routerLink="/all">Cancel</a>
+      </div>
+      </form>
+
+      <section class="delete-section" aria-labelledby="delete-title">
+        <h3 id="delete-title">Delete account</h3>
+        <p>This permanently deletes your account and cannot be undone.</p>
+        <button type="button" class="delete-button" (click)="onDeleteAccount()">Delete account</button>
+      </section>
+    </section>
+  </div>
+</div>

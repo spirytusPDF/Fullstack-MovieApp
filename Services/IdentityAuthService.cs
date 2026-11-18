@@ -12,6 +12,11 @@ namespace Services
     public class IdentityAuthService(UserManager<User> _userManager, 
         IMapper _mapper, SignInManager<User> _signInManager, IJwtTokenGenerator _jwtGenerator)
     {
+        public async Task<UserResponseDTO?> GetUserProfileAsync(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            return user is null ? null : _mapper.Map<UserResponseDTO>(user);
+        }
         
         public async Task<AuthResult> RegisterUserAsync(UserRegisterDTO userDto, string password)
         {
@@ -138,6 +143,53 @@ namespace Services
                 UserId = null,
                 Errors = Array.Empty<string>()
             };
+        }
+
+        public async Task<AuthResult> UpdateAccountAsync(UserUpdateDTO userUpdateDTO)
+        {
+            var loginRes = await LoginUserAsync(new UserLoginDTO() { Email = userUpdateDTO.Email, Password = userUpdateDTO.Password });
+            if (!loginRes.Succes)
+            {
+                return loginRes;
+            }
+
+            var user = await _userManager.FindByEmailAsync(userUpdateDTO.Email);
+            if (user == null)
+            {
+                return new AuthResult() { Succes = false, Errors = ["User not found"] };
+            }
+            if (userUpdateDTO.NewPassword != null)
+            {
+                var resUpdate = await ChangePassword(userUpdateDTO, user);
+               
+            }
+            if(userUpdateDTO.NewGenre != null)
+                user.FavouriteGenre = userUpdateDTO.NewGenre;
+            
+            if(userUpdateDTO.NewCity != null)
+                user.City = userUpdateDTO.NewCity;
+
+            if (userUpdateDTO.NewLogin != null)
+                user.Login = userUpdateDTO.NewLogin;
+
+            await _userManager.UpdateAsync(user);
+            return new AuthResult
+            {
+                Succes = true,
+                UserId = user.Id.ToString(),
+                Errors = Array.Empty<string>()
+            };
+        }
+
+        private async Task<Result> ChangePassword(UserUpdateDTO userUpdateDTO, User user)
+        {
+            var result = await _userManager.ChangePasswordAsync(user, userUpdateDTO.Password, userUpdateDTO.NewPassword);
+            if (!result.Succeeded)
+            {
+                return new Result() { IsSucces = false, Message = "Could not change user password" };
+            }
+
+            return new Result() { IsSucces = true, Message = "" };
         }
     }
 }

@@ -52,7 +52,9 @@ namespace Repositories.Contexts
             modelBuilder.Entity<User>()
             .HasIndex(u => u.Email)
             .IsUnique();
-
+            modelBuilder.Entity<User>()
+            .HasIndex(u => u.Login)
+            .IsUnique();
             //movieSession
             modelBuilder.Entity<MovieSession>()
             .HasOne(m=>m.Movie)

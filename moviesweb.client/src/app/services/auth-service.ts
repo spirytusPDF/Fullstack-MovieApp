@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, finalize, of, tap } from 'rxjs';
-import { AuthResponse, UserLogin, UserRegister, UserResponse } from '../../DTOs/user.model';
+import { AuthResponse, UserLogin, UserProfile, UserRegister, UserResponse, UserUpdate } from '../../DTOs/user.models';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +9,7 @@ import { AuthResponse, UserLogin, UserRegister, UserResponse } from '../../DTOs/
 export class AuthService {
   private readonly apiUrl = '/api/auth';
   private readonly tokenStorageKey = 'movies.auth.token';
+  private readonly loginOverrideStoragePrefix = 'movies.auth.login.';
   currentUser = signal<UserResponse | null>(null);
 
   private http = inject(HttpClient);
@@ -20,6 +21,28 @@ export class AuthService {
   login(contract: UserLogin): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, contract).pipe(
       tap(({ token }) => this.saveToken(token))
+    );
+  }
+
+  getCurrentProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/me`);
+  }
+
+  updateAccount(contract: UserUpdate): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/update`, contract).pipe(
+      tap(() => {
+        const user = this.currentUser();
+        if (user && contract.NewLogin) {
+          localStorage.setItem(`${this.loginOverrideStoragePrefix}${user.id}`, contract.NewLogin);
+          this.currentUser.set({ ...user, login: contract.NewLogin });
+        }
+      })
+    );
+  }
+
+  deleteAccount(contract: UserLogin): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/delete`, { body: contract }).pipe(
+      tap(() => this.clearSession())
     );
   }
 
@@ -58,21 +81,26 @@ export class AuthService {
   }
 
   private saveToken(token: string): void {
-    const user = this.userFromToken(token);
+    const user = this.userFromToken(token, false);
     if (!user) {
       throw new Error('The authentication response did not contain a valid JWT.');
     }
 
+    localStorage.removeItem(`${this.loginOverrideStoragePrefix}${user.id}`);
     localStorage.setItem(this.tokenStorageKey, token);
     this.currentUser.set(user);
   }
 
   private clearSession(): void {
+    const userId = this.currentUser()?.id;
+    if (userId) {
+      localStorage.removeItem(`${this.loginOverrideStoragePrefix}${userId}`);
+    }
     localStorage.removeItem(this.tokenStorageKey);
     this.currentUser.set(null);
   }
 
-  private userFromToken(token: string): UserResponse | null {
+  private userFromToken(token: string, useLoginOverride = true): UserResponse | null {
     try {
       const payload = token.split('.')[1];
       if (!payload) return null;
@@ -105,7 +133,14 @@ export class AuthService {
           ? roleClaim.filter((role): role is string => typeof role === 'string')
           : [];
 
-      return { id, login, email, roles };
+      return {
+        id,
+        login: useLoginOverride
+          ? localStorage.getItem(`${this.loginOverrideStoragePrefix}${id}`) ?? login
+          : login,
+        email,
+        roles
+      };
     } catch {
       return null;
     }
@@ -113,21 +148,43 @@ export class AuthService {
 }
 
 export function getAuthErrorMessage(error: HttpErrorResponse, fallback: string): string {
-  const body = error.error as { errors?: unknown; message?: unknown } | null;
-  if (Array.isArray(body?.errors)) {
-    const messages = body.errors
-      .map((item) => {
-        if (typeof item === 'string') return item;
-        if (typeof item === 'object' && item !== null && 'errorMessage' in item) {
-          const message = item.errorMessage;
-          return typeof message === 'string' ? message : '';
-        }
-        return '';
-      })
-      .filter((message): message is string => message.length > 0);
-
-    if (messages.length > 0) return messages.join(' ');
+  let body: unknown = error.error;
+  if (typeof body === 'string') {
+    const textBody = body;
+    try {
+      body = JSON.parse(textBody);
+    } catch {
+      return textBody.trim() || fallback;
+    }
   }
 
-  return typeof body?.message === 'string' ? body.message : fallback;
+  if (typeof body === 'object' && body !== null) {
+    const response = body as Record<string, unknown>;
+    const errors = response['errors'] ?? response['Errors'];
+    const errorItems = Array.isArray(errors)
+      ? errors
+      : typeof errors === 'object' && errors !== null
+        ? Object.values(errors)
+        : [];
+    const messages = errorItems.flatMap((item) => {
+      if (typeof item === 'string') return [item];
+      if (Array.isArray(item)) return item.filter((message): message is string => typeof message === 'string');
+      if (typeof item !== 'object' || item === null) return [];
+
+      const errorItem = item as Record<string, unknown>;
+      const message = errorItem['errorMessage'] ?? errorItem['ErrorMessage'] ?? errorItem['message'];
+      return typeof message === 'string' ? [message] : [];
+    }).filter((message) => message.length > 0);
+
+    if (messages.length > 0) return messages.join(' ');
+
+    for (const key of ['message', 'detail', 'title', 'Message', 'Detail', 'Title']) {
+      const message = response[key];
+      if (typeof message === 'string' && message.length > 0) return message;
+    }
+  }
+
+  if (error.status === 0) return 'Could not contact the server. Check your connection and try again.';
+  if (error.status === 401) return 'Your session is no longer authorized. Sign in again and retry.';
+  return fallback;
 }

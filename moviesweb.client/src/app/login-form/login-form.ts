@@ -17,14 +17,21 @@ export class LoginForm {
   private router = inject(Router);
 
   errorMessage: string | null = null;
-
   loginForm = this.fb.group({
-    Email: ['', [Validators.required, Validators.email]],
-    Password: ['', Validators.required]
+    Email: ['', [Validators.required, Validators.email, Validators.minLength(2), Validators.maxLength(40)]],
+    Password: ['', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.maxLength(30),
+      Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[#?!@$%^&*-]).+$/)
+    ]]
   });
 
   onSubmit() {
-    if (this.loginForm.invalid) return;
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
     this.errorMessage = null;
     this.authService.login(this.loginForm.getRawValue()).subscribe({
@@ -32,8 +39,12 @@ export class LoginForm {
         this.router.navigate(['/all']);
       },
       error: (error) => {
-        this.errorMessage = getAuthErrorMessage(error, 'Invalid email or password.');
+        this.errorMessage = getAuthErrorMessage(error, 'Could not sign in. Check your email and password, then try again.');
       }
     });
+  }
+
+  clearMessages(): void {
+    this.errorMessage = null;
   }
 }

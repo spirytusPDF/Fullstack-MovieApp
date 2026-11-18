@@ -38,6 +38,7 @@ namespace Services
         {
             var movie = await _movieRepository.GetOneAsync(id);
             if (movie == null) return new Result() { IsSucces = false, Message = "Couldn't find movie" };
+            if(movie.Sessions ==null|| movie.Sessions.Count > 0) return new Result() { IsSucces = false, Message = "Movie has planned sessions" };
             await _movieRepository.DeleteMovie(movie);
             var res = await _movieRepository.SaveChangesAsync();
             if (res) return new Result() { IsSucces = true };

@@ -29,6 +29,12 @@ namespace MoviesWeb.Server.Contracts.Validators
 
             RuleFor(u => u.Email).NotEmpty()
                 .MinimumLength(2).MaximumLength(40).EmailAddress();
+
+            RuleFor(u => u.City)
+                .MinimumLength(2).MaximumLength(40);
+
+            RuleFor(u => u.FavouriteGenre)
+                .MinimumLength(2).MaximumLength(70);
         }
     }
 }

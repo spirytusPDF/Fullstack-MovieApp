@@ -41,7 +41,9 @@
         @if (isAdmin()) {
           <button (click)="openAddMovieModal()">Add a movie</button>
         }
-        <span class="user-name">👤 {{ user()?.login }}</span>
+        <a class="header-button user-name" routerLink="/updateUser" aria-label="Update account">
+          👤 {{ user()?.login }}
+        </a>
         <button (click)="onLogout()">Logout</button>
       } @else {
         <a class="header-button" routerLink="/register">Register</a>

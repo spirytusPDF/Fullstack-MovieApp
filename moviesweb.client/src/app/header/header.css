@@ -164,10 +164,6 @@ header h2:hover {
 }
 
 @media (max-width: 480px) {
-  .user-name {
-    display: none;
-  }
-
   .movie-search input {
     min-width: 0;
   }

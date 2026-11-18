@@ -42,6 +42,7 @@ namespace Repositories.MovieRepo
         {
             return await _context.Movies.Include(m => m.MovieComments)
                 .ThenInclude(c => c.user)
+                .Include(m=>m.Sessions)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 

@@ -10,6 +10,7 @@ namespace MoviesWeb.Server.MapperProfile
         {
             CreateMap<UserRegisterContract, UserRegisterDTO>().ReverseMap();
             CreateMap<UserLoginContract, UserLoginDTO>().ReverseMap();
+            CreateMap<UserUpdateContract, UserUpdateDTO>().ReverseMap();
         }
     }
 }

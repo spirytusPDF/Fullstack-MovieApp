@@ -1,0 +1,155 @@
+.account-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px 20px;
+  background: radial-gradient(circle at top left, #fff5f8, #ffeaf1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.account-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 520px);
+  align-items: start;
+  gap: 24px;
+  width: 100%;
+  max-width: 824px;
+}
+
+.profile-card {
+  padding: 24px;
+  border: 2px solid #ffd6e5;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.25);
+}
+
+.account-card {
+  width: 100%;
+  padding: 32px;
+  border: 2px solid #ffd6e5;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(255, 182, 193, 0.25);
+}
+
+.profile-card h2,
+.account-card h2,
+.account-card h3 {
+  margin: 0 0 8px;
+  color: #d85a8a;
+}
+
+.account-subtitle,
+.delete-section p {
+  color: #8c6b75;
+}
+
+.profile-list {
+  display: grid;
+  gap: 14px;
+  margin: 20px 0 0;
+}
+
+.profile-list div {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ffe2eb;
+}
+
+.profile-list dt {
+  color: #8c6b75;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.profile-list dd {
+  margin: 4px 0 0;
+  color: #5a4b51;
+  overflow-wrap: anywhere;
+}
+
+.account-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.account-card label {
+  margin-top: 8px;
+  color: #7a4a58;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.account-card input {
+  padding: 10px 14px;
+  border: 2px solid #ffccd5;
+  border-radius: 14px;
+  outline: none;
+  color: #5a4b51;
+}
+
+.account-card input:focus {
+  border-color: #ff85a2;
+  box-shadow: 0 0 10px rgba(255, 133, 162, 0.25);
+}
+
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.account-actions button,
+.delete-button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 18px;
+  background: #ff85a2;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-actions a {
+  color: #d85a8a;
+  font-weight: 600;
+}
+
+.delete-section {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #ffd6e5;
+}
+
+.delete-button {
+  background: #b4233b;
+}
+
+.retry-button {
+  padding: 8px 12px;
+  border: 1px solid #ff85a2;
+  border-radius: 16px;
+  background: #fff;
+  color: #d85a8a;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.field-error,
+.server-error {
+  color: #c62828;
+}
+
+.success-message {
+  color: #26734d;
+}
+
+@media (max-width: 760px) {
+  .account-layout {
+    grid-template-columns: minmax(0, 520px);
+    justify-content: center;
+  }
+}

@@ -3,7 +3,7 @@
     <h2 class="authTitle">Sign Up</h2>
     <p class="authSubtitle">Join us to explore movies!</p>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="registerForm">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" (input)="clearMessages()" class="registerForm">
       
       <div class="formGroup">
         <label for="login">Login</label>
@@ -13,8 +13,14 @@
           formControlName="Login" 
           placeholder="Choose a username..." 
         />
-        @if (registerForm.get('Login')?.touched && registerForm.get('Login')?.hasError('required')) {
-          <small class="errorText">Login is required</small>
+        @if (registerForm.controls.Login.invalid && (registerForm.controls.Login.dirty || registerForm.controls.Login.touched)) {
+          @if (registerForm.controls.Login.hasError('required')) {
+            <small class="errorText" role="alert">Login is required.</small>
+          } @else if (registerForm.controls.Login.hasError('minlength')) {
+            <small class="errorText" role="alert">Login must be at least 2 characters.</small>
+          } @else if (registerForm.controls.Login.hasError('maxlength')) {
+            <small class="errorText" role="alert">Login cannot exceed 30 characters.</small>
+          }
         }
       </div>
 
@@ -27,8 +33,14 @@
             formControlName="UserName"
             placeholder="Your name" 
           />
-          @if (registerForm.get('UserName')?.touched && registerForm.get('UserName')?.hasError('required')) {
-            <small class="errorText">Name is required</small>
+          @if (registerForm.controls.UserName.invalid && (registerForm.controls.UserName.dirty || registerForm.controls.UserName.touched)) {
+            @if (registerForm.controls.UserName.hasError('required')) {
+              <small class="errorText" role="alert">Name is required.</small>
+            } @else if (registerForm.controls.UserName.hasError('minlength')) {
+              <small class="errorText" role="alert">Name must be at least 2 characters.</small>
+            } @else if (registerForm.controls.UserName.hasError('maxlength')) {
+              <small class="errorText" role="alert">Name cannot exceed 30 characters.</small>
+            }
           }
         </div>
 
@@ -40,8 +52,14 @@
             formControlName="Surname" 
             placeholder="Your surname" 
           />
-          @if (registerForm.get('Surname')?.touched && registerForm.get('Surname')?.hasError('required')) {
-            <small class="errorText">Surname is required</small>
+          @if (registerForm.controls.Surname.invalid && (registerForm.controls.Surname.dirty || registerForm.controls.Surname.touched)) {
+            @if (registerForm.controls.Surname.hasError('required')) {
+              <small class="errorText" role="alert">Surname is required.</small>
+            } @else if (registerForm.controls.Surname.hasError('minlength')) {
+              <small class="errorText" role="alert">Surname must be at least 2 characters.</small>
+            } @else if (registerForm.controls.Surname.hasError('maxlength')) {
+              <small class="errorText" role="alert">Surname cannot exceed 30 characters.</small>
+            }
           }
         </div>
       </div>
@@ -55,8 +73,14 @@
             formControlName="Email" 
             placeholder="example@mail.com" 
           />
-          @if (registerForm.get('Email')?.touched && registerForm.get('Email')?.hasError('email')) {
-            <small class="errorText">Enter a valid email</small>
+          @if (registerForm.controls.Email.invalid && (registerForm.controls.Email.dirty || registerForm.controls.Email.touched)) {
+            @if (registerForm.controls.Email.hasError('required')) {
+              <small class="errorText" role="alert">Email is required.</small>
+            } @else if (registerForm.controls.Email.hasError('email')) {
+              <small class="errorText" role="alert">Enter a valid email address.</small>
+            } @else if (registerForm.controls.Email.hasError('maxlength')) {
+              <small class="errorText" role="alert">Email cannot exceed 40 characters.</small>
+            }
           }
         </div>
 
@@ -68,8 +92,48 @@
             formControlName="Age" 
             placeholder="18" 
           />
-          @if (registerForm.get('Age')?.touched && (registerForm.get('Age')?.hasError('min') || registerForm.get('Age')?.hasError('max'))) {
-            <small class="errorText">Must be between 16 and 120</small>
+          @if (registerForm.controls.Age.invalid && (registerForm.controls.Age.dirty || registerForm.controls.Age.touched)) {
+            @if (registerForm.controls.Age.hasError('required')) {
+              <small class="errorText" role="alert">Age is required.</small>
+            } @else if (registerForm.controls.Age.hasError('min') || registerForm.controls.Age.hasError('max')) {
+              <small class="errorText" role="alert">Age must be between 16 and 120.</small>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div class="formGroup">
+          <label for="city">City (optional)</label>
+          <input
+            id="city"
+            type="text"
+            formControlName="City"
+            placeholder="Your city"
+          />
+          @if (registerForm.controls.City.invalid && (registerForm.controls.City.dirty || registerForm.controls.City.touched)) {
+            @if (registerForm.controls.City.hasError('minlength')) {
+              <small class="errorText" role="alert">City must be at least 2 characters.</small>
+            } @else if (registerForm.controls.City.hasError('maxlength')) {
+              <small class="errorText" role="alert">City cannot exceed 40 characters.</small>
+            }
+          }
+        </div>
+
+        <div class="formGroup">
+          <label for="favouriteGenre">Favourite genre (optional)</label>
+          <input
+            id="favouriteGenre"
+            type="text"
+            formControlName="FavouriteGenre"
+            placeholder="Your favourite genre"
+          />
+          @if (registerForm.controls.FavouriteGenre.invalid && (registerForm.controls.FavouriteGenre.dirty || registerForm.controls.FavouriteGenre.touched)) {
+            @if (registerForm.controls.FavouriteGenre.hasError('minlength')) {
+              <small class="errorText" role="alert">Genre must be at least 2 characters.</small>
+            } @else if (registerForm.controls.FavouriteGenre.hasError('maxlength')) {
+              <small class="errorText" role="alert">Genre cannot exceed 70 characters.</small>
+            }
           }
         </div>
       </div>
@@ -82,6 +146,17 @@
           formControlName="Password" 
           placeholder="••••••••" 
         />
+        @if (registerForm.controls.Password.invalid && (registerForm.controls.Password.dirty || registerForm.controls.Password.touched)) {
+          @if (registerForm.controls.Password.hasError('required')) {
+            <small class="errorText" role="alert">Password is required.</small>
+          } @else if (registerForm.controls.Password.hasError('minlength')) {
+            <small class="errorText" role="alert">Password must be at least 8 characters.</small>
+          } @else if (registerForm.controls.Password.hasError('maxlength')) {
+            <small class="errorText" role="alert">Password cannot exceed 30 characters.</small>
+          } @else if (registerForm.controls.Password.hasError('pattern')) {
+            <small class="errorText" role="alert">Password needs uppercase and lowercase letters, a number, and a symbol.</small>
+          }
+        }
       </div>
 
       <div class="formGroup">
@@ -92,18 +167,22 @@
           formControlName="ConfirmPassword" 
           placeholder="••••••••" 
         />
-        @if (registerForm.hasError('passwordsMismatch') && registerForm.get('ConfirmPassword')?.touched) {
-          <small class="errorText">Passwords do not match</small>
+        @if ((registerForm.controls.ConfirmPassword.invalid || registerForm.hasError('passwordsMismatch')) && (registerForm.controls.ConfirmPassword.dirty || registerForm.controls.ConfirmPassword.touched)) {
+          @if (registerForm.controls.ConfirmPassword.hasError('required')) {
+            <small class="errorText" role="alert">Please confirm your password.</small>
+          } @else if (registerForm.hasError('passwordsMismatch')) {
+            <small class="errorText" role="alert">Passwords do not match.</small>
+          }
         }
       </div>
 
       @if (errorMessage) {
-        <div class="serverErrorAlert">
+        <div class="serverErrorAlert" role="alert">
           {{ errorMessage }}
         </div>
       }
 
-      <button type="submit" class="submitBtn" [disabled]="registerForm.invalid">
+      <button type="submit" class="submitBtn">
         Create Account
       </button>
 
