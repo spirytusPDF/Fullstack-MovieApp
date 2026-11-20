@@ -24,6 +24,7 @@ export class AddMovieForm {
     genre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
     releaseYear: [new Date().getFullYear(), [Validators.required, Validators.min(1890), Validators.max(new Date().getFullYear() + 1)]],
     rating: [8.0, [Validators.required, Validators.min(0.1), Validators.max(10)]],
+    duration: ['', [Validators.required, Validators.pattern(/^(?:[01]?\d|20)h\s*(?:[0-5]?\d|60)m$/)]],
     posterUrl: [null],
     movieUrl: [null]
   });

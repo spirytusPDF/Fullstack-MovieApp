@@ -6,6 +6,7 @@ export interface MovieAdd{
     genre:string,
     releaseYear:number,
     rating:number,
+    duration:string,
     posterUrl:string | null,
     movieUrl:string | null
 }
@@ -14,6 +15,7 @@ export interface MovieUpdate{
     genre:string,
     releaseYear:number,
     rating:number,
+    duration:string,
     posterUrl:string | null,
     movieUrl:string | null
 }
@@ -25,6 +27,7 @@ export interface MovieResponse{
     genre:string,
     releaseYear:number,
     rating:number,
+    duration:string,
     posterUrl:string | null,
     movieUrl:string | null,
     movieComments:CommentResponse[]

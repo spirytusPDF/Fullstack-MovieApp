@@ -89,6 +89,9 @@
     <article class="sessionDetail">
       <h2 class="sessionDetailTitle">{{ session.movie.title }}</h2>
       <p><strong>Starts:</strong> {{ session.startsAt | date:'EEE, MMM d, y, h:mm a' }}</p>
+      @if (session.movie.duration) {
+        <p><strong>Movie duration:</strong> {{ session.movie.duration }}</p>
+      }
       <p><strong>Hall:</strong> {{ session.hallName }}</p>
       <p><strong>Ticket price:</strong> {{ session.ticketPrice | number:'1.2-2' }}</p>
       <p><strong>Available seats:</strong> {{ session.availableSeats }}</p>
@@ -102,6 +105,9 @@
           <button class="sessionCardMain" type="button" (click)="selectSession(session)">
             <span class="sessionDate">{{ session.startsAt | date:'EEE, MMM d, y, h:mm a' }}</span>
             <span class="sessionMovie">{{ session.movie.title }}</span>
+            @if (session.movie.duration) {
+              <span class="sessionSummary">Movie duration: {{ session.movie.duration }}</span>
+            }
             <span class="sessionHall">{{ session.hallName }}</span>
             <span class="sessionSummary">
               {{ session.ticketPrice | number:'1.2-2' }} · {{ session.availableSeats }} seats available

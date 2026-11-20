@@ -43,6 +43,7 @@ export class MovieDisplay implements OnInit {
     genre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
     releaseYear: [new Date().getFullYear(), [Validators.required, Validators.min(1890), Validators.max(new Date().getFullYear() + 1)]],
     rating: [8, [Validators.required, Validators.min(0.1), Validators.max(10)]],
+    duration: ['', [Validators.required, Validators.pattern(/^(?:[01]?\d|20)h\s*(?:[0-5]?\d|60)m$/)]],
     posterUrl: [''],
     movieUrl: ['']
   });
@@ -87,6 +88,7 @@ export class MovieDisplay implements OnInit {
       genre: movie.genre,
       releaseYear: movie.releaseYear,
       rating: movie.rating,
+      duration: movie.duration,
       posterUrl: movie.posterUrl ?? '',
       movieUrl: movie.movieUrl ?? ''
     });
@@ -108,6 +110,7 @@ export class MovieDisplay implements OnInit {
       genre: value.genre.trim(),
       releaseYear: value.releaseYear,
       rating: value.rating,
+      duration: value.duration.trim(),
       posterUrl: value.posterUrl.trim() || null,
       movieUrl: value.movieUrl.trim() || null
     };

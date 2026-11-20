@@ -11,6 +11,7 @@ namespace MoviesWeb.Server.Contracts.Validators
 
             RuleFor(m => m.ReleaseYear).NotEmpty().InclusiveBetween(1890, DateTime.Now.Year + 1);
             RuleFor(m => m.Rating).NotEmpty().InclusiveBetween(0.1, 10);
+            RuleFor(m => m.Duration).NotEmpty().Matches("^(?:[01]?\\d|20)h\\s*(?:[0-5]?\\d|60)m$");
 
             RuleFor(m => m.PosterUrl).Matches("https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)");
             RuleFor(m => m.MovieUrl).Matches("https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)");

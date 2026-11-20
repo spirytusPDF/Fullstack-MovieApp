@@ -76,6 +76,23 @@
       </div>
 
       <div class="formGroup">
+        <label for="duration" class="formLabel">Duration *</label>
+        <input
+          id="duration"
+          type="text"
+          formControlName="duration"
+          class="formInput"
+          [class.inputError]="movieForm.get('duration')?.touched && movieForm.get('duration')?.invalid"
+          placeholder="2h 30m" />
+        @if (movieForm.get('duration')?.touched && movieForm.get('duration')?.errors?.['required']) {
+          <span class="fieldError">Enter movie duration (for example, 2h 30m)</span>
+        }
+        @if (movieForm.get('duration')?.touched && movieForm.get('duration')?.errors?.['pattern']) {
+          <span class="fieldError">Use hours and minutes, for example 2h 30m (maximum 20h 60m)</span>
+        }
+      </div>
+
+      <div class="formGroup">
         <label for="rating" class="formLabel">Rating (0 - 10) *</label>
         <input 
           id="rating" 

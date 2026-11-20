@@ -76,6 +76,7 @@ namespace Repositories.MovieRepo
                     oldMovie.Rating = movie.Rating;
                     oldMovie.PosterUrl = movie.PosterUrl;
                     oldMovie.MovieUrl = movie.MovieUrl;
+                    oldMovie.Duration = movie.Duration;
                     
                 }
             }

@@ -14,6 +14,7 @@ export interface MovieSessionResponse {
   movie: {
     title: string;
     rating: number;
+    duration: string;
   };
 }
 

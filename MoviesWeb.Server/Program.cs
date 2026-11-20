@@ -26,7 +26,12 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("def")));
 builder.Services.AddIdentityCore<User>(options =>
-    options.Password.RequireDigit = true
+{
+    options.Password.RequireDigit = true;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
+}
+    
+
 )
 .AddRoles<IdentityRole<Guid>>()
 .AddEntityFrameworkStores<AppDbContext>()
@@ -60,6 +65,7 @@ builder.Services.AddTransient<MovieService>();
 builder.Services.AddTransient<IdentityAuthService>();
 builder.Services.AddTransient<CommentService>();
 builder.Services.AddTransient<SessionsService>();
+builder.Services.AddTransient<DummyAuthService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AddCommentValidator>();

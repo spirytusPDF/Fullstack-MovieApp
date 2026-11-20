@@ -46,6 +46,16 @@
                 </label>
               </div>
               <label>
+                Duration
+                <input class="commentInput" type="text" formControlName="duration" placeholder="2h 30m" />
+                @if (editForm.controls.duration.touched && editForm.controls.duration.errors?.['required']) {
+                  <span class="errorMessage">Enter movie duration.</span>
+                }
+                @if (editForm.controls.duration.touched && editForm.controls.duration.errors?.['pattern']) {
+                  <span class="errorMessage">Use hours and minutes, for example 2h 30m.</span>
+                }
+              </label>
+              <label>
                 Poster URL
                 <input class="commentInput" type="url" formControlName="posterUrl" />
               </label>
@@ -68,6 +78,9 @@
             <div class="metaRow">
               <span class="genreTag">{{ currentMovie.genre }}</span>
               <span class="yearTag">{{ currentMovie.releaseYear }}</span>
+              @if (currentMovie.duration) {
+                <span class="yearTag">Runtime: {{ currentMovie.duration }}</span>
+              }
             </div>
             <p class="movieDescription">{{ currentMovie.description }}</p>
             <div class="actionRow">

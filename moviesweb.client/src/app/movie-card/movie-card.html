@@ -16,6 +16,9 @@
           <div class="movieMeta">
             <span class="genreTag">{{ movie.genre }}</span>
             <span class="yearTag">{{ movie.releaseYear }}</span>
+            @if (movie.duration) {
+              <span class="yearTag">Runtime: {{ movie.duration }}</span>
+            }
           </div>
 
           <h3 class="movieTitle">
