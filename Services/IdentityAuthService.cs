@@ -2,7 +2,6 @@
 using Domain;
 using Microsoft.AspNetCore.Identity;
 using Services.DTOs.User;
-using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +9,7 @@ using System.Text;
 namespace Services
 {
     public class IdentityAuthService(UserManager<User> _userManager, 
-        IMapper _mapper, SignInManager<User> _signInManager, IJwtTokenGenerator _jwtGenerator)
+        IMapper _mapper, SignInManager<User> _signInManager, IJwtTokenService _jwtGenerator)
     {
         public async Task<UserResponseDTO?> GetUserProfileAsync(Guid userId)
         {
@@ -21,7 +20,21 @@ namespace Services
         public async Task<AuthResult> RegisterUserAsync(UserRegisterDTO userDto, string password)
         {
             var user = _mapper.Map<User>(userDto);
-            var result = await _userManager.CreateAsync(user, password);
+            IdentityResult result;
+            try
+            {
+                result = await _userManager.CreateAsync(user, password);
+            }
+            catch (Exception ex)
+            {
+
+                return new AuthResult()
+                {
+                    Succes = false,
+                    Errors = ["Email already exists"]
+                };
+            }
+            
             if (result.Succeeded)
             {
                 var roleResult = await _userManager.AddToRoleAsync(user, "User");
@@ -40,7 +53,8 @@ namespace Services
                 return new AuthResult
                 {
                     Succes = true,
-                    Token = token,
+                    Token = token.Token,
+                    ExpirationTime = token.ExpirationTime,
                     UserId = user.Id.ToString(),
                     Errors = Array.Empty<string>()
                 };
@@ -94,7 +108,8 @@ namespace Services
             return new AuthResult
             {
                 Succes = true,
-                Token = token,
+                Token = token.Token,
+                ExpirationTime = token.ExpirationTime,
                 UserId = user.Id.ToString(),
                 Errors = Array.Empty<string>()
             };

@@ -20,6 +20,16 @@ export class Header {
   private movieService = inject(MovieService);
   user = this.authService.currentUser;
   isAdmin = computed(() => this.user()?.roles.includes('Admin') ?? false);
+  get isMinimalHeaderPage(): boolean {
+    const matchOptions = {
+      paths: 'exact' as const,
+      queryParams: 'ignored' as const,
+      fragment: 'ignored' as const,
+      matrixParams: 'ignored' as const,
+    };
+    return this.router.isActive('/sessions', matchOptions)
+      || this.router.isActive('/updateUser', matchOptions);
+  }
   searchQuery = '';
   searchField: MovieSearchField = 'Key';
   selectedGenre = '';

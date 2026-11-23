@@ -19,35 +19,10 @@ namespace MoviesWeb.Server.Controllers
     public class AuthController(IValidator<UserRegisterContract> _registerValidator,
         IValidator<UserLoginContract> _loginValidator,
          IValidator<UserUpdateContract> _updateValidator,
-        IMapper _mapper,IdentityAuthService _authService,
-        DummyAuthService dummyService) : ControllerBase
+        IMapper _mapper,IdentityAuthService _authService) : ControllerBase
         
     {
-        //[HttpPost("signup")]
 
-        //public async Task<IActionResult> Register([FromBody] UserRegisterContract registerContract)
-        //{
-        //    var validationresult = _registerValidator.Validate(registerContract);
-        //    if (!validationresult.IsValid) return BadRequest(new { errors = validationresult.Errors });
-
-        //    var user = _mapper.Map<UserRegisterDTO>(registerContract);
-        //    var result = await dummyService.RegisterUserAsync(user, registerContract.Password);
-        //    if (!result.Succes)
-        //        return BadRequest(new { errors = result.Errors });
-        //    return Ok();
-        //}
-        //[HttpPost("login")]
-        //public async Task<IActionResult> SignIn(UserLoginContract loginContract)
-        //{
-        //   var validationresult = _loginValidator.Validate(loginContract);
-        //   if (!validationresult.IsValid) return BadRequest(new { errors = validationresult.Errors });
-        //    var user = _mapper.Map<UserLoginDTO>(loginContract);
-
-        //   var result = await dummyService.ValidateUserCredsAsync(user);
-        //   if (!result)
-        //    return BadRequest();
-        //   return Ok();
-        //}
 
         [Authorize]
         [HttpGet("me")]

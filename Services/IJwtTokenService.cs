@@ -8,14 +8,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Services.Helpers
+namespace Services
 {
-    public interface IJwtTokenGenerator
+    public interface IJwtTokenService
     {
-        Task<string> GenerateTokenAsync(User user);
+        Task<AuthResult> GenerateTokenAsync(User user);
     }
 
-    public class JwtTokenGenerator : IJwtTokenGenerator
+    public class JwtTokenGenerator : IJwtTokenService
     {
         private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
@@ -26,7 +26,7 @@ namespace Services.Helpers
             _userManager = userManager;
         }
 
-        public async Task<string> GenerateTokenAsync(User user)
+        public async Task<AuthResult> GenerateTokenAsync(User user)
         {
             var claims = new List<Claim>
         {
@@ -41,16 +41,22 @@ namespace Services.Helpers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)); 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var time = DateTime.UtcNow.AddMinutes(int.Parse(_config["Jwt:ExpirationTime"]));
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(60),
+                expires: time,
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new AuthResult()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                ExpirationTime = time
+            };
+                
         }
     }
 }

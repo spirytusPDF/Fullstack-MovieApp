@@ -14,7 +14,6 @@ using Repositories.Contexts;
 using Repositories.MovieRepo;
 using Repositories.SessionsRepo;
 using Services;
-using Services.Helpers;
 using Services.MapperProfile;
 using System.Security.Claims;
 using System.Text;
@@ -57,6 +56,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization();
+
 builder.Services.AddTransient<IMovieRepository, MovieRepository>();
 builder.Services.AddTransient<ICommentsRepository, CommentRepository>();
 builder.Services.AddTransient<ISessionsRepository, SessionsRepository>();
@@ -65,8 +66,7 @@ builder.Services.AddTransient<MovieService>();
 builder.Services.AddTransient<IdentityAuthService>();
 builder.Services.AddTransient<CommentService>();
 builder.Services.AddTransient<SessionsService>();
-builder.Services.AddTransient<DummyAuthService>();
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenGenerator>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AddCommentValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<MovieAddValidator>();

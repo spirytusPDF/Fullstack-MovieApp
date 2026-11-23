@@ -8,7 +8,7 @@
       }
     </div>
 
-    @if (user()) {
+    @if (user() && !isMinimalHeaderPage) {
       <form class="movie-search" (submit)="$event.preventDefault()">
         <select
           aria-label="Search by"
@@ -32,14 +32,16 @@
           placeholder="Search movies...">
       </form>
     } @else {
-      <p class="sign-in-prompt">Let's sign in first!</p>
+      
     }
 
     <nav class="user-nav">
       @if (user()) {
-        <a class="header-button" routerLink="/sessions">Sessions</a>
-        @if (isAdmin()) {
-          <button (click)="openAddMovieModal()">Add a movie</button>
+        @if (!isMinimalHeaderPage) {
+          <a class="header-button" routerLink="/sessions">Sessions</a>
+          @if (isAdmin()) {
+            <button (click)="openAddMovieModal()">Add a movie</button>
+          }
         }
         <a class="header-button user-name" routerLink="/updateUser" aria-label="Update account">
           👤 {{ user()?.login }}
@@ -51,7 +53,7 @@
     </nav>
   </div>
 
-  @if (user()) {
+  @if (user() && !isMinimalHeaderPage) {
     <nav class="catalog-nav" aria-label="Movie categories">
       <label class="genre-select">
         <span class="visually-hidden">Filter by genre</span>
