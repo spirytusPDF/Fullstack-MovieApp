@@ -47,7 +47,7 @@ namespace MoviesWeb.Server.Controllers
             var result = await _authService.RegisterUserAsync(user, registerContract.Password);
             if (!result.Succes)
                 return BadRequest(new { errors = result.Errors });
-            return Ok(new { token = result.Token });
+            return Ok(new { token = result.Token, expTime = result.ExpirationTime });
         }
 
         [HttpPost("login")]
@@ -61,7 +61,7 @@ namespace MoviesWeb.Server.Controllers
             if (!result.Succes)
                 return Unauthorized(new { errors = result.Errors });
 
-            return Ok(new { token = result.Token });
+            return Ok(new { token = result.Token, expTime = result.ExpirationTime });
         }
         [HttpPost("logout")]
         public async Task<IActionResult> LogOut([FromBody] string id)

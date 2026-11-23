@@ -25,7 +25,8 @@ export interface UserUpdate {
 }
 
 export interface AuthResponse {
-    token: string
+    token: string,
+    expTime: string | null
 }
 
 export interface UserResponse {
