@@ -156,13 +156,15 @@
               <div class="commentItem">
                 <div class="commentUser">{{ comment.userLogin || 'Anonymous' }} · {{ comment.title }}</div>
                 <div class="commentText">{{ comment.text }}</div>
-                <button
-                  class="btn btnDelete"
-                  type="button"
-                  [disabled]="deletingCommentId() !== null"
-                  (click)="deleteComment(comment.id)">
-                  {{ deletingCommentId() === comment.id ? 'Deleting...' : 'Delete' }}
-                </button>
+                @if (canDeleteComment(comment)) {
+                  <button
+                    class="btn btnDelete"
+                    type="button"
+                    [disabled]="deletingCommentId() !== null"
+                    (click)="deleteComment(comment.id)">
+                    {{ deletingCommentId() === comment.id ? 'Deleting...' : 'Delete' }}
+                  </button>
+                }
               </div>
             }
           } @else {

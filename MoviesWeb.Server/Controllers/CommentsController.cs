@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MoviesWeb.Server.Contracts;
 using Services;
 using Services.DTOs.Comments;
+using System.Security.Claims;
 
 namespace MoviesWeb.Server.Controllers
 {
@@ -14,6 +16,7 @@ namespace MoviesWeb.Server.Controllers
         IValidator<AddCommentContract> _addValidator,
         IMapper _mapper) : ControllerBase
     {
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddComment(AddCommentContract contract, [FromQuery] int movieId, [FromQuery] string userId)
         {
@@ -31,13 +34,23 @@ namespace MoviesWeb.Server.Controllers
             if (!res.IsSucces) return StatusCode(500, res.Message);
             else return Ok();
         }
-
+        [Authorize]
         [HttpDelete("{id:int:min(1)}")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            var res = await _commentService.DeleteComment(id);
-            if (!res.IsSucces) return StatusCode(500, res.Message);
-            else return Ok();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub");
+            if (!Guid.TryParse(userId, out var parsedUserId)) return Unauthorized();
+
+            var canDeleteAny = User.IsInRole("Manager") || User.IsInRole("Admin");
+            var outcome = await _commentService.DeleteComment(id, parsedUserId, canDeleteAny);
+
+            return outcome switch
+            {
+                CommentDeleteOutcome.Deleted => Ok(),
+                CommentDeleteOutcome.NotFound => NotFound(),
+                CommentDeleteOutcome.Forbidden => Forbid(),
+                _ => StatusCode(StatusCodes.Status500InternalServerError, "Couldn't delete a comment")
+            };
         }
     }
 }

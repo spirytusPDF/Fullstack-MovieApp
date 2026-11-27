@@ -3,14 +3,17 @@ using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Repositories.RoleSeeding;
+using Repositories.RoleSeeding.SeedConfiguration;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace Repositories.Contexts
 {
 
-    public class AppDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class AppDbContext : IdentityDbContext<User, Role, Guid>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -25,28 +28,8 @@ namespace Repositories.Contexts
 
             base.OnModelCreating(modelBuilder);
 
-            //roles
-            modelBuilder.Entity<IdentityRole<Guid>>().HasData(
-            new IdentityRole<Guid>
-            {
-               Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-               Name = "Admin",
-               NormalizedName = "ADMIN",
-               ConcurrencyStamp = "11111111-1111-1111-1111-111111111111"
-                //IdentityRole<Guid> automatically
-                //sets
-                //ConcurrencyStamp = Guid.NewGuid().ToString()
-                //inside its constructor whenever I write
-                //new IdentityRole<Guid>().
-            },
-            new IdentityRole<Guid>
-            {
-               Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-               Name = "User",
-               NormalizedName = "USER",
-               ConcurrencyStamp = "22222222-2222-2222-2222-222222222222"
-            }
-             );
+            modelBuilder.ApplyConfiguration(new RoleConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
 
             //user
             modelBuilder.Entity<User>()

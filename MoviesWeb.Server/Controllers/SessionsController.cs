@@ -18,6 +18,7 @@ namespace MoviesWeb.Server.Controllers
         IValidator<SessionUpdateContract> _updateValidator,
         IMapper _mapper) : ControllerBase
     {
+        [Authorize]
         [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult<SessionResponseDTO>> GetOneAsync(int id)
         {
@@ -25,7 +26,7 @@ namespace MoviesWeb.Server.Controllers
             if (session == null) return NotFound("No session found");
             else return Ok(session);
         }
-
+        [Authorize]
         [HttpGet("view")]
         public async Task<ActionResult<List<SessionResponseDTO>>> GetSessionsAsync([FromQuery] SessionParamsContract parameters)
         {

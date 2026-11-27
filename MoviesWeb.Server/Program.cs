@@ -1,17 +1,16 @@
-
 using Domain;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.IdentityModel.Tokens.Experimental;
+using Microsoft.OpenApi;
 using MoviesWeb.Server.Contracts.Validators;
 using MoviesWeb.Server.MapperProfile;
 using Repositories.CommentsRepo;
 using Repositories.Contexts;
 using Repositories.MovieRepo;
+using Repositories.RoleSeeding;
 using Repositories.SessionsRepo;
 using Services;
 using Services.MapperProfile;
@@ -24,15 +23,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(op => op.UseSqlServer(builder.Configuration.GetConnectionString("def")));
+
 builder.Services.AddIdentityCore<User>(options =>
 {
     options.Password.RequireDigit = true;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
-}
-    
-
-)
-.AddRoles<IdentityRole<Guid>>()
+})
+.AddRoles<Role>()
 .AddEntityFrameworkStores<AppDbContext>()
 .AddSignInManager(); 
 
@@ -96,7 +93,25 @@ builder.Services.AddAutoMapper(opt => {
 });
 
 
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        In = ParameterLocation.Header,
+        Description = "Please enter valid token",
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", doc)] = []
+    });
+}
+    
+    
+);
 
 
 var app = builder.Build();
@@ -104,12 +119,13 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
-if (app.Environment.IsDevelopment())
-{    
-    app.MapOpenApi();
-    app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "Movies"));
+ 
+app.MapOpenApi();
+app.UseSwagger();
+app.UseSwaggerUI();
+    
 
-}
+
 
 app.UseHttpsRedirection();
 
@@ -119,5 +135,6 @@ app.UseCors("AllowAngularApp");
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
+
 
 app.Run();

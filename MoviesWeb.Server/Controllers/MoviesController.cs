@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MoviesWeb.Server.Contracts;
 using Services;
 using Services.DTOs.Movie;
 using System.Text.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MoviesWeb.Server.Controllers
 {
@@ -20,9 +17,9 @@ namespace MoviesWeb.Server.Controllers
         IMapper _mapper) : ControllerBase
     {
         private readonly MovieService _movieService = movieService;
-        
 
-        
+
+        [Authorize]
         [HttpGet("{id:int:min(1)}")]
         public async Task<ActionResult<MovieResponseDTO>> GetOneAsync(int id)
         {
@@ -30,7 +27,7 @@ namespace MoviesWeb.Server.Controllers
             if (movie == null) return NotFound("No movie found");
             else return Ok(movie);
         }
-
+        [Authorize]
         [HttpGet("view")]
         public async Task<ActionResult<List<MovieResponseDTO>>> GetMoviesAsync([FromQuery] MovieParamsContract parameters)
         {

@@ -8,6 +8,14 @@ using AutoMapper;
 
 namespace Services
 {
+    public enum CommentDeleteOutcome
+    {
+        Deleted,
+        NotFound,
+        Forbidden,
+        Failed
+    }
+
     public class CommentService(ICommentsRepository commentRepository, IMapper _mapper)
     {
         private readonly ICommentsRepository _commentRepository = commentRepository;
@@ -20,14 +28,15 @@ namespace Services
             if(res) return new Result() { IsSucces=true };
             else return new Result() {IsSucces=false, Message="Couldn't add a comment" };
         }
-        public async Task<Result> DeleteComment(int id)
+        public async Task<CommentDeleteOutcome> DeleteComment(int id, Guid userId, bool canDeleteAny)
         {
             var comment = await _commentRepository.GetOneAsync(id);
-            if(comment == null) return new Result() { IsSucces = false, Message = "No Comment found" };
+            if (comment == null) return CommentDeleteOutcome.NotFound;
+            if (!canDeleteAny && comment.UserId != userId) return CommentDeleteOutcome.Forbidden;
+
             await _commentRepository.DeleteComment(comment);
             var res = await _commentRepository.SaveChangesAsync();
-            if (res) return new Result() { IsSucces = true };
-            else return new Result() { IsSucces = false, Message = "Couldn't delete a comment" };
+            return res ? CommentDeleteOutcome.Deleted : CommentDeleteOutcome.Failed;
         }
 
 

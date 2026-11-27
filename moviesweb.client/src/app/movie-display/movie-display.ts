@@ -20,6 +20,14 @@ export class MovieDisplay implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   isAdmin = computed(() => this.authService.currentUser()?.roles.includes('Admin') ?? false);
+  canDeleteComment(comment: CommentResponse): boolean {
+    const user = this.authService.currentUser();
+    return !!user && (
+      user.login === comment.userLogin ||
+      user.roles.includes('Manager') ||
+      user.roles.includes('Admin')
+    );
+  }
   isLoading = signal<boolean>(true);
   errorMessage: string | null = null;
   isEditing = signal(false);
@@ -200,6 +208,8 @@ export class MovieDisplay implements OnInit {
   }
 
   deleteComment(commentId: number): void {
+    const comment = this.movie()?.movieComments.find(({ id }) => id === commentId);
+    if (!comment || !this.canDeleteComment(comment)) return;
     if (!Number.isSafeInteger(commentId) || commentId < 1) return;
     if (!window.confirm('Delete this comment?')) return;
 
